@@ -1,0 +1,9 @@
+librum-ci-models:
+  build: .
+  environment:
+    - NODE_ENV
+  links:
+    - mongo
+
+mongo:
+  image: mongo:3.2

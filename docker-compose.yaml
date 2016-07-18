@@ -1,0 +1,26 @@
+librum-ci-master:
+  build: ./librum-ci-master
+  command: app
+  environment:
+    - NODE_ENV
+  ports:
+    - 8080:8080
+  links:
+    - mongo
+    - redis
+
+librum-ci-githooks:
+  build: ./librum-ci-githooks
+  command: app
+  environment:
+    - NODE_ENV
+  ports:
+    - 9001:9001
+
+mongo:
+  image: mongo:3.2
+
+redis:
+  image: redis:3.0.7
+  environment:
+    - MASTER=true

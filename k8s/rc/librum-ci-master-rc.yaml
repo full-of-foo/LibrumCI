@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: librum-ci-master
+  name: librum-ci-master-controller
+spec:
+  replicas: 1
+  selector:
+    name: librum-ci-master
+  template:
+    metadata:
+      labels:
+        name: librum-ci-master
+    spec:
+      containers:
+      - image: toeknee/librum-ci-master:0.02
+        imagePullPolicy: Always
+        name: librum-ci-master
+        ports:
+        - containerPort: 8080
+          name: http-server
+        # env:
+        #   - name: KUBE_API_TOKEN
+        #     valueFrom:
+        #       secretKeyRef:
+        #         name: librum-ci-creds
+        #         key: user-token

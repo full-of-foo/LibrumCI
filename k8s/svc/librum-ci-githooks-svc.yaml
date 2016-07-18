@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: librum-ci-githooks
+  labels:
+    name: librum-ci-githooks
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 9001
+      protocol: TCP
+  selector:
+    name: librum-ci-githooks

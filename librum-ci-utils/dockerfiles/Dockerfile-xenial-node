@@ -1,0 +1,15 @@
+FROM ubuntu:16.04
+
+##### Linux
+ENV DEBIAN_FRONTEND noninteractive
+RUN set -ex \
+  && apt-get update \
+  && apt-get install -y --force-yes apt-utils curl git
+
+
+##### Node
+ENV NPM_CONFIG_LOGLEVEL info
+RUN set -ex \
+  && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
+  && apt-get install --force-yes -y nodejs \
+  && npm config set registry https://registry.npmjs.org/

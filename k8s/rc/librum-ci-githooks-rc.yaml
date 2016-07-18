@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: librum-ci-githooks
+  name: librum-ci-githooks-controller
+spec:
+  replicas: 1
+  selector:
+    name: librum-ci-githooks
+  template:
+    metadata:
+      labels:
+        name: librum-ci-githooks
+    spec:
+      containers:
+      - image: toeknee/librum-ci-githooks:0.01
+        imagePullPolicy: Always
+        name: librum-ci-githooks
+        ports:
+        - containerPort: 9001
+          name: http-server
