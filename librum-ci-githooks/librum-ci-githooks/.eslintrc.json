@@ -189,6 +189,7 @@
     "xit": true,
     "beforeAll": true,
     "afterAll": true,
-    "runs": true
+    "runs": true,
+    "Promise": true
   }
 }

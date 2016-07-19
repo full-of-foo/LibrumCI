@@ -1,19 +1,12 @@
 import mongoose from 'mongoose';
-import {schemaOpts} from './base';
+import {schemaOpts, addHelperFns} from './base';
 
 const BuildSchema = new mongoose.Schema({
-    id: {
-        type: String,
-        required: true,
-        unique: true,
-        index: true,
-        default: mongoose.Types.ObjectId
-    },
     number: Number,
-    state: String, // TODO - enum
+    state: {type: String, required: true}, // TODO - enum
     startedAt: Date,
     finishedAt: Date,
-    compareUrl: String,
+    compareUrl: {type: String, required: true},
     commits: [{
         sha: String,
         commitedAt: Date,
@@ -22,9 +15,10 @@ const BuildSchema = new mongoose.Schema({
         url: String,
         isHead: Boolean
     }],
-    branchId: {type: mongoose.Schema.Types.ObjectId, ref: 'Branch'}
+    branchId: {type: mongoose.Schema.Types.ObjectId, ref: 'Branch', required: true},
 }, schemaOpts);
 
-BuildSchema.set('toJSON', {getters: true});
+BuildSchema.set('toJSON', {getters: true, virtual: true});
+addHelperFns(BuildSchema);
 
 export default mongoose.model('Build', BuildSchema);
