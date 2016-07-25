@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: ReplicationController
 metadata:
+  namespace: librum-ci
   labels:
     name: librum-ci-master
   name: librum-ci-master-controller

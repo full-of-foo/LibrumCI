@@ -4,7 +4,10 @@ const SHARED_REPOS_DIR = '/git-repos';
 const _gitSyncPodTemplate = {
     'apiVersion': 'v1',
     'kind': 'Pod',
-    'metadata': {},
+    'metadata': {
+        'namespace': 'librum-ci',
+        'labels': {},
+    },
     'spec': {
         'restartPolicy': 'OnFailure',
         'containers': [
@@ -44,7 +47,7 @@ const _gitSyncPodTemplate = {
 const generateSyncPodTemplate = (buildId, repoSlug, cloneUrl, branch, rev) => {
     const template = JSON.parse(JSON.stringify(_gitSyncPodTemplate));
 
-    template.metadata.name = `git-sync-${buildId}`;
+    template.metadata.labels.name = `git-sync-${buildId}`;
     template.spec.containers[0]['env'].push({
         'name': 'GIT_SYNC_REPO',
         'value': cloneUrl

@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {Build} from 'librum-ci-models';
-import {createSyncRepoPod} from '../lib/repoSync';
+import {createSyncRepoPod, createSyncImagePod} from '../lib/repoSync';
 
 const router = Router();
 
@@ -33,8 +33,20 @@ router.route('/:buildId/schedule')
                 const repo = branch.repo;
                 const headCommitSha = build.commits.filter(c => c.isHead)[0].sha;
                 createSyncRepoPod(build._id, repo.slug, repo.cloneUrl, branch.slug, headCommitSha)
-                    .then(pod => res.json(pod))
-                    .catch(err => res.send(err));
+                    .then(repoSyncPod => {
+                        console.log('Repo sync pod created:', repoSyncPod);
+
+                        // TODO - don't block, listen/stream
+                        setTimeout(() => {
+                            createSyncImagePod(build._id, repo.slug)
+                                .then(imageSyncPod => {
+                                    console.log('Image sync pod created:', imageSyncPod);
+                                    res.json({'pods': [repoSyncPod, imageSyncPod]});
+                                })
+                                .catch(imageSyncErr => res.send(imageSyncErr));
+                        }, 9000);
+                    })
+                    .catch(repoSyncErr => res.send(repoSyncErr));
             });
     });
 

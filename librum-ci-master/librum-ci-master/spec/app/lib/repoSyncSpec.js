@@ -7,7 +7,7 @@ describe('Lib: repoSync', () => {
     it('should be able to generateSyncPodTemplate', () => {
         const t = generateSyncPodTemplate(...templateArgs);
 
-        expect(t.metadata.name).toBe('git-sync-1234');
+        expect(t.metadata.labels.name).toBe('git-sync-1234');
         expect(t.spec.containers[0]['env'][2].value).toBe('http://gh.com/foo/bar');
         expect(t.spec.containers[0]['env'][3].value).toBe('/git-repos/foo/bar');
         expect(t.spec.containers[0]['env'][4].value).toBe('master');

@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: ReplicationController
 metadata:
+  namespace: librum-ci
   labels:
     name: mongo
   name: mongo-controller

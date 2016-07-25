@@ -1,0 +1,28 @@
+#!/bin/bash
+set -x
+
+# Assert connected to Docker daemon
+D_SERVER_VERSION="$(docker version --format '{{.Server.Version}}')"
+if [ -z "$D_SERVER_VERSION" ]; then
+  echo "Docker server version not found."
+  exit 1
+fi
+# Assert required env vars are set
+if [ ! -d "$REPO_DIR" ]; then
+  echo "REPO_DIR not found (Set to '$REPO_DIR')."
+  exit 1
+fi
+if [ -z "$REPO_NAME" ]; then
+  echo "REPO_NAME not set."
+  exit 1
+fi
+if [ -z "$BUILD_ID" ]; then
+  echo "BUILD_ID not set."
+  exit 1
+fi
+
+
+echo "Building '$REPO_NAME:$BUILD_ID' (in $REPO_DIR)..."
+set -e \
+  && cd $REPO_DIR \
+  && docker build -t $REPO_NAME:$BUILD_ID .
