@@ -20,3 +20,6 @@ spec:
         ports:
         - containerPort: 9001
           name: http-server
+        env:
+        - name: NODE_ENV
+          value: production

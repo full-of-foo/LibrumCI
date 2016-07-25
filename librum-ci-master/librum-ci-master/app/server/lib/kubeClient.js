@@ -1,10 +1,11 @@
 import Client from 'node-kubernetes-client';
+import config from '../../../config';
 
 const client = new Client({
-    host: 'foo', // TODO - parameterise
-    protocol: 'https', // TODO - parameterise
+    host: config.kubeMasterUri,
+    protocol: 'https',
     version: 'v1',
-    token: 'bar', // TODO - parameterise
+    token: config.kubeToken,
     namespace: 'librum-ci'
 });
 

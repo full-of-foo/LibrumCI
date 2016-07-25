@@ -7,7 +7,6 @@ librum-ci-master:
     - 8080:8080
   links:
     - mongo
-    - redis
 
 librum-ci-githooks:
   build: ./librum-ci-githooks
@@ -16,11 +15,9 @@ librum-ci-githooks:
     - NODE_ENV
   ports:
     - 9001:9001
+  links:
+    - mongo
+    - librum-ci-master
 
 mongo:
   image: mongo:3.2
-
-redis:
-  image: redis:3.0.7
-  environment:
-    - MASTER=true

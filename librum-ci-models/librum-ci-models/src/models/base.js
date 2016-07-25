@@ -20,10 +20,18 @@ const _findAndUpdate = function findAndUpdate(id, data){
         });
     });
 };
+const _upsert = function upsert(filter, data){
+    return new Promise((resolve, reject) => {
+        this.findOneAndUpdate(filter, data, {new: true, upsert: true}, (err, res) => {
+            err ? reject(err) : resolve(res);
+        });
+    });
+};
 
 const addHelperFns = Schema => {
     Schema.statics.getById = _getById;
     Schema.statics.findAndUpdate = _findAndUpdate;
+    Schema.statics.upsert = _upsert;
 };
 
 export {schemaOpts, addHelperFns};

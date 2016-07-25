@@ -4,7 +4,13 @@ import Build from '../../lib/models/build';
 const data = {
     state: 'Started',
     compareUrl: 'lol.com',
-    branchId: new mongoose.Types.ObjectId()
+    branch: new mongoose.Types.ObjectId(),
+    commits: [{
+        sha: '123',
+        commitedAt: new Date(),
+        url: 'pew.com',
+        isHead: true
+    }]
 };
 
 describe('Model: Build', () => {

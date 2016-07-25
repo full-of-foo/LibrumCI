@@ -8,15 +8,20 @@ const BuildSchema = new mongoose.Schema({
     finishedAt: Date,
     compareUrl: {type: String, required: true},
     commits: [{
-        sha: String,
-        commitedAt: Date,
+        sha: {type: String, required: true},
+        commitedAt: {type: Date, required: true},
         authorName: String,
         authorEmail: String,
-        url: String,
-        isHead: Boolean
+        url: {type: String, required: true},
+        isHead: {type: Boolean, required: true}
     }],
-    branchId: {type: mongoose.Schema.Types.ObjectId, ref: 'Branch', required: true},
+    branch: {type: mongoose.Schema.Types.ObjectId, ref: 'Branch', required: true}
 }, schemaOpts);
+
+BuildSchema.path('commits').validate(commits => {
+    if (!commits || commits && commits.length === 0) return false;
+    return true;
+}, 'Builds needs at least one commit');
 
 BuildSchema.set('toJSON', {getters: true, virtual: true});
 addHelperFns(BuildSchema);

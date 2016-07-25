@@ -32,4 +32,16 @@ describe('BaseSchema: MockModel', () => {
         });
     });
 
+    it('should be able to upsert', done => {
+        const promise = MockModel.upsert({foo: 'bar'}, {foo: 'bar'});
+        expect(promise.constructor).toBe(Promise);
+        promise
+            .then(m => {
+                expect(m.foo).toBe('bar');
+                MockModel.upsert({_id: m._id}, {foo: 'baz'})
+                    .then(m2 => expect(m2.foo).toBe('baz'))
+                    .then(done);
+            });
+    });
+
 });

@@ -14,13 +14,15 @@ spec:
         name: librum-ci-master
     spec:
       containers:
-      - image: toeknee/librum-ci-master:0.02
+      - image: toeknee/librum-ci-master:0.01
         imagePullPolicy: Always
         name: librum-ci-master
         ports:
         - containerPort: 8080
           name: http-server
-        # env:
+        env:
+        - name: NODE_ENV
+          value: production
         #   - name: KUBE_API_TOKEN
         #     valueFrom:
         #       secretKeyRef:

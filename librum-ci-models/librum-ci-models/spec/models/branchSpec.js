@@ -3,7 +3,7 @@ import Branch from '../../lib/models/branch';
 
 const data = {
     slug: 'refs/hehe',
-    repoId: new mongoose.Types.ObjectId()
+    repo: new mongoose.Types.ObjectId()
 };
 
 describe('Model: Branch', () => {

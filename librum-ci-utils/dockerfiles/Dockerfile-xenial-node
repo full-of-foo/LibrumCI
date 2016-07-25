@@ -4,7 +4,7 @@ FROM ubuntu:16.04
 ENV DEBIAN_FRONTEND noninteractive
 RUN set -ex \
   && apt-get update \
-  && apt-get install -y --force-yes apt-utils curl git
+  && apt-get install -y --force-yes apt-utils curl git libstdc++6
 
 
 ##### Node

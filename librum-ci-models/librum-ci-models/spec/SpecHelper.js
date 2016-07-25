@@ -1,7 +1,7 @@
 process.env.NODE_ENV = 'test';
 
 import mongoose from 'mongoose';
-const dbUri = 'mongo/librum-ci-master-test';
+const dbUri = 'mongo/librum-ci-models-test';
 
 beforeEach(done => {
     if (mongoose.connection.readyState === 1) return done();

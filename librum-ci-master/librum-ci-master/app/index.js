@@ -1,1 +1,3 @@
-import './server';
+import createServer from './server';
+
+createServer();

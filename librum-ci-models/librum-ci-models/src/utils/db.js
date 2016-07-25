@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import seed from './seed';
 
 export default function(config, callback) {
     mongoose.Promise = global.Promise;
@@ -25,6 +26,11 @@ export default function(config, callback) {
 
     connection.on('connected', () => {
         console.log(`Conn open to ${config.dbUri}`);
-        callback();
+
+        if (config.isSeeded) {
+            mongoose.connection.db.dropDatabase(() => seed().then(callback));
+        } else {
+            callback();
+        }
     });
 }
