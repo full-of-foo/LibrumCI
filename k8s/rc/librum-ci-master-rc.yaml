@@ -24,8 +24,3 @@ spec:
         env:
         - name: NODE_ENV
           value: production
-        #   - name: KUBE_API_TOKEN
-        #     valueFrom:
-        #       secretKeyRef:
-        #         name: librum-ci-creds
-        #         key: user-token
