@@ -1,8 +1,28 @@
 import {Router} from 'express';
 import {Build} from 'librum-ci-models';
-import {createSyncRepoPod, createSyncImagePod} from '../lib/repoSync';
+import {createSyncRepoPod} from '../lib/repoSync';
+import {createSyncImagePod} from '../lib/imageSync';
+import kubeClient from '../lib/kubeClient';
 
 const router = Router();
+
+const createAndStreamBuildPipeline = (buildId, repoSlug, cloneUrl, branchSlug, sha, errorCb, successCb) => {
+    createSyncRepoPod(buildId, repoSlug, cloneUrl, branchSlug, sha)
+        .then(repoSyncPod => {
+            const streamRes = kubeClient.streamPod(repoSyncPod.metadata.labels.name, errorCb,
+                                (data => {
+                                    if (data.value.status.phase === 'Succeeded') {
+                                        // TODO: fix - hitting here n times, should be once
+                                        // TODO: cleanup - delete repoSync pod after use
+
+                                        // createSyncImagePod(buildId, repoSlug)
+                                        //     .then(() => streamRes.end())
+                                        //     .then(successCb)
+                                        //     .catch(errorCb);
+                                    }
+                                }));
+        }).catch(errorCb);
+};
 
 router.route('/')
     .get((req, res) => {
@@ -32,21 +52,9 @@ router.route('/:buildId/schedule')
                 const branch = build.branch;
                 const repo = branch.repo;
                 const headCommitSha = build.commits.filter(c => c.isHead)[0].sha;
-                createSyncRepoPod(build._id, repo.slug, repo.cloneUrl, branch.slug, headCommitSha)
-                    .then(repoSyncPod => {
-                        console.log('Repo sync pod created:', repoSyncPod);
-
-                        // TODO - don't block, listen/stream
-                        setTimeout(() => {
-                            createSyncImagePod(build._id, repo.slug)
-                                .then(imageSyncPod => {
-                                    console.log('Image sync pod created:', imageSyncPod);
-                                    res.json({'pods': [repoSyncPod, imageSyncPod]});
-                                })
-                                .catch(imageSyncErr => res.send(imageSyncErr));
-                        }, 9000);
-                    })
-                    .catch(repoSyncErr => res.send(repoSyncErr));
+                createAndStreamBuildPipeline(build._id, repo.slug, repo.cloneUrl, branch.slug, headCommitSha,
+                                             (buildErr => res.send(buildErr)),
+                                             (imageSyncPod => res.json(imageSyncPod)));
             });
     });
 

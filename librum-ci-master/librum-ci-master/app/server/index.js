@@ -2,6 +2,7 @@ import http from 'http';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import errorhandler from 'errorhandler';
 import { db } from 'librum-ci-models';
 import config from '../../config';
 import middleware from './middleware';
@@ -13,6 +14,7 @@ const createServer = () => {
 
     app.use(cors({exposedHeaders: ['Link']}));
     app.use(bodyParser.json({limit : '100kb'}));
+    app.use(errorhandler());
 
     db(config, () => {
         app.use(middleware());

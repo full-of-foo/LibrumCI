@@ -46,7 +46,7 @@ var flMaxSyncFailures = flag.Int("max-sync-failures", envInt("GIT_SYNC_MAX_SYNC_
 var flUsername = flag.String("username", envString("GIT_SYNC_USERNAME", ""), "username")
 var flPassword = flag.String("password", envString("GIT_SYNC_PASSWORD", ""), "password")
 
-var flChmod = flag.Int("change-permissions", envInt("GIT_SYNC_PERMISSIONS", 0), `If set it will change the permissions of the directory 
+var flChmod = flag.Int("change-permissions", envInt("GIT_SYNC_PERMISSIONS", 0), `If set it will change the permissions of the directory
 		that contains the git repository. Example: 744`)
 
 func envString(key, def string) string {
@@ -135,8 +135,8 @@ func syncRepo(repo, dest, branch, rev string, depth int) error {
 		// clone repo
 		args := []string{"clone", "--no-checkout", "-b", branch}
 		if depth != 0 {
-			args = append(args, "-depth")
-			args = append(args, string(depth))
+			args = append(args, "--depth")
+			args = append(args, strconv.Itoa(depth))
 		}
 		args = append(args, repo)
 		args = append(args, dest)

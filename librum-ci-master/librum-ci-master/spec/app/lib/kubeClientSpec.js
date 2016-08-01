@@ -5,5 +5,11 @@ describe('Lib: kubeClient', () => {
     it('should be correctly instatiated', () => {
         expect(kubeClient).toBeDefined();
         expect(kubeClient.constructor).toBe(Client);
+        expect(kubeClient.streamPod).toBeDefined();
+    });
+
+    it('can call streamPod', done => {
+        kubeClient.streamPod('foo')
+            .finally(done);
     });
 });

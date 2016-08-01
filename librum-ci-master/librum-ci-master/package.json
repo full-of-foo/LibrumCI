@@ -11,12 +11,16 @@
     "compression": "1.5.2",
     "cors": "2.7.1",
     "express": "4.13.3",
+    "errorhandler": "1.4.3",
     "dockerode": "2.2.10",
     "jasmine": "2.4.1",
     "jasmine-node": "1.14.5",
+    "JSONStream": "1.1.4",
     "librum-ci-models": "0.0.11",
     "nock": "7.7.2",
     "node-kubernetes-client": "0.2.3",
+    "request": "2.74.0",
+    "request-promise": "4.0.2",
     "resource-router-middleware": "0.5.1",
     "supertest": "1.2.0"
   }

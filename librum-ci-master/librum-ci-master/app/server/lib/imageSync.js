@@ -6,6 +6,7 @@ const _imageSyncPodTemplate = {
     'kind': 'Pod',
     'metadata': {
         'namespace': 'librum-ci',
+        'generateName': 'image-sync-',
         'labels': {}
     },
     'spec': {
@@ -18,7 +19,7 @@ const _imageSyncPodTemplate = {
                 'volumeMounts': [
                     {
                         'mountPath': SHARED_REPOS_DIR,
-                        'name': 'git-repos-persistent-storage'
+                        'name': 'nfs'
                     },
                     {
                         'mountPath': '/var/run/docker.sock',
@@ -30,10 +31,9 @@ const _imageSyncPodTemplate = {
         ],
         'volumes': [
             {
-                'name': 'git-repos-persistent-storage',
-                'gcePersistentDisk': {
-                    'pdName': 'git-repos-disk',
-                    'fsType': 'ext4'
+                'name': 'nfs',
+                'persistentVolumeClaim': {
+                    'claimName': 'nfs'
                 }
             },
             {

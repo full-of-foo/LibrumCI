@@ -4,17 +4,22 @@ LibrumCI
 Deploying to Kubernetes
 
 ````
-gcloud container clusters create librum-ci --scopes="storage-ro,compute-rw,monitoring,logging-write" --num-nodes 3
+# K8s 1.2.5 needed (https://cloud.google.com/container-engine/release-notes#july_22_2016)
+gcloud container clusters create librum-ci --scopes="storage-ro,compute-rw,monitoring,logging-write" --num-nodes=6
 gcloud compute disks create --size=200GB mongo-disk
-gcloud compute disks create --size=100GB registry-disk
-gcloud compute disks create --size=100GB git-repos-disk
 
 
-// TODO - update
 kubectl create -f k8s/ns
+
+kubectl create -f k8s/nfs/provisioner/nfs-server-gce-pv.yaml
+kubectl create -f k8s/nfs/nfs-server-rc.yaml
+kubectl create -f k8s/nfs/nfs-server-svc.yaml
+# Update nfs-pv.yaml server with the IP at `kubectl describe services nfs-server --namespace=librum-ci | grep IP:`
+kubectl create -f k8s/nfs/nfs-pv.yaml
+kubectl create -f k8s/nfs/nfs-pvc.yaml
+
 kubectl create -f k8s/svc --namespace=librum-ci
 kubectl create -f k8s/rc --namespace=librum-ci
-kubectl create -f k8s/pv --namespace=librum-ci
 ````
 
 Local Development

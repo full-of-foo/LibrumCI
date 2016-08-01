@@ -6,10 +6,11 @@ const _gitSyncPodTemplate = {
     'kind': 'Pod',
     'metadata': {
         'namespace': 'librum-ci',
+        'generateName': 'git-sync-',
         'labels': {},
     },
     'spec': {
-        'restartPolicy': 'OnFailure',
+        'restartPolicy': 'Never',
         'containers': [
             {
                 'env': [
@@ -22,30 +23,30 @@ const _gitSyncPodTemplate = {
                         'value': '1'
                     }
                 ],
-                'image': 'toeknee/git-sync:0.01',
+                'image': 'toeknee/librum-ci-git-sync:0.01',
                 'name': 'git-sync',
                 'volumeMounts': [
                     {
                         'mountPath': SHARED_REPOS_DIR,
-                        'name': 'git-repos-persistent-storage'
+                        'name': 'nfs'
                     }
                 ]
             }
         ],
         'volumes': [
             {
-                'name': 'git-repos-persistent-storage',
-                'gcePersistentDisk': {
-                    'pdName': 'git-repos-disk',
-                    'fsType': 'ext4'
+                'name': 'nfs',
+                'persistentVolumeClaim': {
+                    'claimName': 'nfs'
                 }
-            }
+            },
         ]
     }
 };
 
 const generateSyncPodTemplate = (buildId, repoSlug, cloneUrl, branch, rev) => {
     const template = JSON.parse(JSON.stringify(_gitSyncPodTemplate));
+    branch = branch.startsWith('refs/heads/') ? branch.split('refs/heads/')[1] : branch;
 
     template.metadata.labels.name = `git-sync-${buildId}`;
     template.spec.containers[0]['env'].push({
