@@ -7,19 +7,16 @@ import kubeClient from '../lib/kubeClient';
 const router = Router();
 
 const createAndStreamBuildPipeline = (buildId, repoSlug, cloneUrl, branchSlug, sha, errorCb, successCb) => {
-    createSyncRepoPod(buildId, repoSlug, cloneUrl, branchSlug, sha)
+    return createSyncRepoPod(buildId, repoSlug, cloneUrl, branchSlug, sha)
         .then(repoSyncPod => {
-            const streamRes = kubeClient.streamPod(repoSyncPod.metadata.labels.name, errorCb,
+            kubeClient.streamPod(repoSyncPod.metadata.labels.name, errorCb,
                                 (data => {
-                                    if (data.value.status.phase === 'Succeeded') {
-                                        // TODO: fix - hitting here n times, should be once
-                                        // TODO: cleanup - delete repoSync pod after use
-
-                                        // createSyncImagePod(buildId, repoSlug)
-                                        //     .then(() => streamRes.end())
-                                        //     .then(successCb)
-                                        //     .catch(errorCb);
-                                    }
+                                    createSyncImagePod(buildId, repoSlug)
+                                        .then(imageSyncPod => {
+                                            kubeClient.streamPod(imageSyncPod.metadata.labels.name,
+                                                                 errorCb, successCb);
+                                        })
+                                        .catch(errorCb);
                                 }));
         }).catch(errorCb);
 };
