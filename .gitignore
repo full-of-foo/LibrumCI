@@ -39,3 +39,11 @@ jspm_packages
 
 # Binaries
 librum-ci-git-sync/src/k8s.io/contrib/git-sync/git-sync
+
+# LateX
+report/report.aux
+report/report.bbl
+report/report.blg
+report/report.log
+report/report.out
+report/report.synctex.gz
