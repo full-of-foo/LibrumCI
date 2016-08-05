@@ -1,7 +1,7 @@
 import template from './app.html';
 import './app.styl';
 
-let appComponent = {
+const appComponent = {
     template,
     restrict: 'E'
 };

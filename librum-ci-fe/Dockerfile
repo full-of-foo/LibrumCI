@@ -13,4 +13,4 @@ COPY librum-ci-fe/ /librum-ci-fe/
 
 RUN node_modules/.bin/gulp webpack
 
-CMD ["node_modules/.bin/http-server", "dist", "--cors", "-p", "8081"]
+CMD ["node", "--harmony", "server.js"]

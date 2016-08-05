@@ -2,7 +2,7 @@ import template from './about.html';
 import controller from './about.controller';
 import './about.styl';
 
-let aboutComponent = {
+const aboutComponent = {
     restrict: 'E',
     bindings: {},
     template,

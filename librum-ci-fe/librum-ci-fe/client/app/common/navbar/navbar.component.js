@@ -2,7 +2,7 @@ import template from './navbar.html';
 import controller from './navbar.controller';
 import './navbar.styl';
 
-let navbarComponent = {
+const navbarComponent = {
     restrict: 'E',
     bindings: {},
     template,
