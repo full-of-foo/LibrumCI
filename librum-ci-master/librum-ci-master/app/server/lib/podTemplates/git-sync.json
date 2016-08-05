@@ -1,0 +1,44 @@
+{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "namespace": "librum-ci",
+        "generateName": "git-sync-",
+        "labels": {
+            "group": "git-sync"
+        }
+    },
+    "spec": {
+        "restartPolicy": "Never",
+        "containers": [
+            {
+                "env": [
+                    {
+                        "name": "GIT_SYNC_ONE_TIME",
+                        "value": "true"
+                    },
+                    {
+                        "name": "GIT_SYNC_DEPTH",
+                        "value": "1"
+                    }
+                ],
+                "image": "toeknee/librum-ci-git-sync:0.01",
+                "name": "git-sync",
+                "volumeMounts": [
+                    {
+                        "mountPath": "/git-repos",
+                        "name": "nfs"
+                    }
+                ]
+            }
+        ],
+        "volumes": [
+            {
+                "name": "nfs",
+                "persistentVolumeClaim": {
+                    "claimName": "nfs"
+                }
+            }
+        ]
+    }
+}

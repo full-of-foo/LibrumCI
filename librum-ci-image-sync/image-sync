@@ -12,6 +12,14 @@ if [ ! -d "$REPO_DIR" ]; then
   echo "REPO_DIR not found (Set to '$REPO_DIR')."
   exit 1
 fi
+if [ -z "$DOCKER_HUB_USER" ]; then
+  echo "DOCKER_HUB_USER not set."
+  exit 1
+fi
+if [ -z "$DOCKER_HUB_PASS" ]; then
+  echo "DOCKER_HUB_PASS not set."
+  exit 1
+fi
 if [ -z "$REPO_NAME" ]; then
   echo "REPO_NAME not set."
   exit 1
@@ -21,8 +29,10 @@ if [ -z "$BUILD_ID" ]; then
   exit 1
 fi
 
-
-echo "Building '$REPO_NAME:$BUILD_ID' (in $REPO_DIR)..."
+FULL_BUILD_NAME=$DOCKER_HUB_USER/librum-ci-build-${REPO_NAME/\//-}:$BUILD_ID
+echo "Building '$FULL_BUILD_NAME' (in $REPO_DIR)..."
 set -e \
   && cd $REPO_DIR \
-  && docker build -t $REPO_NAME:$BUILD_ID .
+  && docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS \
+  && docker build -t $FULL_BUILD_NAME . \
+  && docker push $FULL_BUILD_NAME

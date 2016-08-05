@@ -1,6 +1,8 @@
 Librum CI Image Sync
 ==========
 
+TODO - update required env params
+
 Usage
 ```
 docker build -t test . && docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/repo -e REPO_DIR=/repo -e REPO_NAME=image-sync-test -e BUILD_ID=123 test

@@ -1,0 +1,65 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "namespace": "librum-ci",
+    "generateName": "image-sync-",
+    "labels": {
+      "group": "image-sync"
+    }
+  },
+  "spec": {
+    "restartPolicy": "Never",
+    "containers": [
+      {
+        "env": [
+          {
+            "name": "DOCKER_HUB_USER",
+            "valueFrom": {
+              "secretKeyRef": {
+                "name": "docker-hub-creds",
+                "key": "docker-hub-user"
+              }
+            }
+          },
+          {
+            "name": "DOCKER_HUB_PASS",
+            "valueFrom": {
+              "secretKeyRef": {
+                "name": "docker-hub-creds",
+                "key": "docker-hub-pass"
+              }
+            }
+          }
+        ],
+        "image": "toeknee/librum-ci-image-sync:0.03",
+        "name": "image-sync",
+        "volumeMounts": [
+          {
+            "mountPath": "/git-repos",
+            "name": "nfs"
+          },
+          {
+            "mountPath": "/var/run/docker.sock",
+            "name": "docker-socket",
+            "readOnly": false
+          }
+        ]
+      }
+    ],
+    "volumes": [
+      {
+        "name": "nfs",
+        "persistentVolumeClaim": {
+          "claimName": "nfs"
+        }
+      },
+      {
+        "name": "docker-socket",
+        "hostPath": {
+          "path": "/var/run/docker.sock"
+        }
+      }
+    ]
+  }
+}

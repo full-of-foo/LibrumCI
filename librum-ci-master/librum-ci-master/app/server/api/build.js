@@ -1,24 +1,23 @@
 import {Router} from 'express';
 import {Build} from 'librum-ci-models';
-import {createSyncRepoPod} from '../lib/repoSync';
-import {createSyncImagePod} from '../lib/imageSync';
+import {GitSyncPodBuilder, ImageSyncPodBuilder} from '../lib/podBuilder';
 import kubeClient from '../lib/kubeClient';
 
 const router = Router();
 
-const createAndStreamBuildPipeline = (buildId, repoSlug, cloneUrl, branchSlug, sha, errorCb, successCb) => {
-    return createSyncRepoPod(buildId, repoSlug, cloneUrl, branchSlug, sha)
-        .then(repoSyncPod => {
-            kubeClient.streamPod(repoSyncPod.metadata.labels.name, errorCb,
-                                (data => {
-                                    createSyncImagePod(buildId, repoSlug)
-                                        .then(imageSyncPod => {
-                                            kubeClient.streamPod(imageSyncPod.metadata.labels.name,
-                                                                 errorCb, successCb);
-                                        })
-                                        .catch(errorCb);
-                                }));
-        }).catch(errorCb);
+const createAndStreamBuildPipeline = (buildId, repoSlug, cloneUrl, branchSlug, sha) => {
+    const imagePodArgs = {buildId:buildId, repoSlug:repoSlug};
+    const gitPodArgs = Object.assign(imagePodArgs, {cloneUrl:cloneUrl, branch:branchSlug, sha:sha});
+
+    // TODO - speed up build by doing deletes async afterwards
+    return GitSyncPodBuilder.createPod(gitPodArgs)
+        .then(repoSyncPod => kubeClient.streamPodUntilPhase(repoSyncPod))
+        .then(streamedRepoPod => kubeClient.deletePod(streamedRepoPod))
+        .then(() => {
+            return ImageSyncPodBuilder.createPod(imagePodArgs)
+                    .then(imageSyncPod => kubeClient.streamPodUntilPhase(imageSyncPod))
+                    .then(streamedImagedPod => kubeClient.deletePod(streamedImagedPod));
+        });
 };
 
 router.route('/')
@@ -49,9 +48,10 @@ router.route('/:buildId/schedule')
                 const branch = build.branch;
                 const repo = branch.repo;
                 const headCommitSha = build.commits.filter(c => c.isHead)[0].sha;
-                createAndStreamBuildPipeline(build._id, repo.slug, repo.cloneUrl, branch.slug, headCommitSha,
-                                             (buildErr => res.send(buildErr)),
-                                             (imageSyncPod => res.json(imageSyncPod)));
+                createAndStreamBuildPipeline(build._id, repo.slug, repo.cloneUrl, branch.slug, headCommitSha)
+                    .then(data => res.json(data))
+                    .error(err2 => console.error('Pipeline error:', err2))
+                    .catch(err3 => res.send(err3));
             });
     });
 

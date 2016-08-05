@@ -8,8 +8,8 @@ Deploying to Kubernetes
 gcloud container clusters create librum-ci --scopes="storage-ro,compute-rw,monitoring,logging-write" --num-nodes=6
 gcloud compute disks create --size=200GB mongo-disk
 
-
 kubectl create -f k8s/ns
+kubectl create secret generic docker-hub-creds --from-literal=docker-hub-user={username} --from-literal=docker-hub-pass={password} --namespace=librum-ci
 
 kubectl create -f k8s/nfs/provisioner/nfs-server-gce-pv.yaml
 kubectl create -f k8s/nfs/nfs-server-rc.yaml
@@ -18,8 +18,8 @@ kubectl create -f k8s/nfs/nfs-server-svc.yaml
 kubectl create -f k8s/nfs/nfs-pv.yaml
 kubectl create -f k8s/nfs/nfs-pvc.yaml
 
-kubectl create -f k8s/svc --namespace=librum-ci
-kubectl create -f k8s/rc --namespace=librum-ci
+kubectl create -f k8s/svc
+kubectl create -f k8s/rc
 ````
 
 Local Development
