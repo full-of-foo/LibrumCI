@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  namespace: librum-ci
+  labels:
+    name: librum-ci-fe
+  name: librum-ci-fe-controller
+spec:
+  replicas: 1
+  selector:
+    name: librum-ci-fe
+  template:
+    metadata:
+      labels:
+        name: librum-ci-fe
+    spec:
+      containers:
+      - image: toeknee/librum-ci-fe:0.01
+        imagePullPolicy: Always
+        name: librum-ci-fe
+        ports:
+        - containerPort: 8081
+          name: http-server
+        env:
+        - name: NODE_ENV
+          value: production

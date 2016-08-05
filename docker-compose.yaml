@@ -1,3 +1,13 @@
+librum-ci-fe:
+  build: ./librum-ci-fe
+  environment:
+    - NODE_ENV
+  ports:
+    - 8081:8081
+  links:
+    - librum-ci-master
+    - librum-ci-githooks
+
 librum-ci-master:
   build: ./librum-ci-master
   command: app
