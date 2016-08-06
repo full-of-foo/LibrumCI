@@ -3,10 +3,12 @@ import controller from './repo.controller';
 import './repo.styl';
 
 let repoComponent = {
-    restrict: 'E',
-    bindings: {},
-    template,
-    controller
+    bindings: {
+        repos: '='
+    },
+    template: template,
+    bindToController: true,
+    controller: controller
 };
 
 export default repoComponent;

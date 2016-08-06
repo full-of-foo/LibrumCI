@@ -1,5 +1,15 @@
 <navbar></navbar>
-<h1>{{ $ctrl.name }}</h1>
+<h1>Repositories</h1>
 <section>
-  Repos.
+  <div class='error'>{{$ctrl.error}}</div>
+
+  <div ng-repeat="repo in $ctrl.repos">
+    <h2>{{repo.slug}}</h2>
+    <div>
+      {{repo.createdAt}} | {{repo.cloneUrl}}
+    </div>
+    <div>
+      {{repo.url}} | {{repo.description}} | {{repo.updatedAt}}
+    </div>
+  </div>
 </section>

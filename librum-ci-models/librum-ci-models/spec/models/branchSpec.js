@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from './../../src/utils/mongoose';
 import Branch from '../../lib/models/branch';
 
 const data = {

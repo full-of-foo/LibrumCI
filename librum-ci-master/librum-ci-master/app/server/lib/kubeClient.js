@@ -50,6 +50,13 @@ Client.prototype.deletePod = function(pod) {
     });
 };
 
+Client.prototype.getServiceByName = function(name) {
+    return new Promise((resolve, reject) => {
+        console.log(`Getting service: ${name}`);
+        this.services.get(name, (err, service) => err ? reject(err) : resolve(service));
+    });
+};
+
 const client = new Client({
     host: config.kubeMasterUri,
     protocol: 'https',

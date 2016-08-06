@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from './../../src/utils/mongoose';
 import {addHelperFns} from '../../lib/models/base';
 
 const MockSchema = new mongoose.Schema({foo: String});
@@ -42,6 +42,14 @@ describe('BaseSchema: MockModel', () => {
                     .then(m2 => expect(m2.foo).toBe('baz'))
                     .then(done);
             });
+    });
+
+    it('should be warpped with Bluebird promises', done => {
+        const promise = MockModel.findOne({foo: 'bar'}).exec();
+        expect(promise.constructor)
+            .toBe(Promise);
+
+        promise.then(done);
     });
 
 });

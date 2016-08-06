@@ -1,6 +1,6 @@
 {
   "name": "librum-ci-models",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "TODO",
   "main": "lib/index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "babel-polyfill": "6.9.0",
+    "bluebird": "3.4.1",
     "mongoose": "4.5.3"
   },
   "devDependencies": {

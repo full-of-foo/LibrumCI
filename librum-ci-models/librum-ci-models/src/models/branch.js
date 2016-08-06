@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from './../utils/mongoose';
 import {schemaOpts, addHelperFns} from './base';
 
 const BranchSchema = new mongoose.Schema({

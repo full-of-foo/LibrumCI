@@ -2,8 +2,6 @@ import mongoose from 'mongoose';
 import seed from './seed';
 
 export default function(config, callback) {
-    mongoose.Promise = global.Promise;
-
     console.log(`Creating DB: ${config.dbUri}`);
     mongoose.connect(config.dbUri);
 
@@ -33,4 +31,4 @@ export default function(config, callback) {
             callback();
         }
     });
-}
+};

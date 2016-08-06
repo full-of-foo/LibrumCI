@@ -1,6 +1,7 @@
 process.env.NODE_ENV = 'test';
 
-import mongoose from 'mongoose';
+import mongoose from './../src/utils/mongoose';
+
 const dbUri = 'mongo/librum-ci-models-test';
 
 beforeEach(done => {

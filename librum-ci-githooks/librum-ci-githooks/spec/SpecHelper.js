@@ -1,7 +1,10 @@
 process.env.NODE_ENV = 'test';
 
 import mongoose from 'mongoose';
+import Promise from 'bluebird';
 import config from '../config';
+
+mongoose.Promise = Promise;
 
 beforeEach(done => {
     if (mongoose.connection.readyState === 1) return done();

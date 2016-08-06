@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from './../../src/utils/mongoose';
 import Build from '../../lib/models/build';
 
 const data = {
