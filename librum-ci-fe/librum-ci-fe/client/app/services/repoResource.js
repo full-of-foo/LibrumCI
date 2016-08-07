@@ -7,7 +7,7 @@ export default class RepoResource {
     }
 
     get(id) {
-        return this.$http.get(`${this.baseUrl}${id}`);
+        return this.$http.get(`${this.baseUrl}${id}`, {params:{isFull: '1'}});
     }
 
     getAll() {

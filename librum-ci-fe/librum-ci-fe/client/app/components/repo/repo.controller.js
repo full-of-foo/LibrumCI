@@ -1,15 +1,13 @@
-class RepoController {
-    constructor(repoResource) {
+export default class RepoController {
+    constructor(repoResource, $stateParams) {
         "ngInject";
 
-        this.repos = [];
+        this.repo = {};
         this.repoResource = repoResource;
-        this.repoResource.getAll()
+        this.repoResource.get($stateParams.id)
             .then(res => {
-                this.repos = res.data;
+                this.repo = res.data;
             })
             .catch(err => this.error = err);
     }
 }
-
-export default RepoController;

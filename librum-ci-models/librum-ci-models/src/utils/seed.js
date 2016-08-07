@@ -24,28 +24,23 @@ const buildData = {
 };
 
 export default () => {
-    return new Promise((resolve, reject) => {
-        console.log('Seeding model data...');
-        new Repo(repoData).save((err, repo) => {
-            if (err) {
-                console.error(err);
-                reject(err);
-            }
+    console.log('Seeding model data...');
 
-            branchData.repo = repo._id;
-            new Branch(branchData).save((err2, branch) => {
-                if (err2) {
-                    console.error(err2);
-                    reject(err2);
-                }
+    return Repo.find({slug: repoData.slug}).exec()
+        .then(repos => {
+            if (repos.length === 1) return Promise.resolve(false);
 
-                buildData.branch = branch._id;
-                new Build(buildData).save((err3, build) => {
-                    if (err2) console.error(err2);
-                    console.log('Seeding model data finished');
-                    (err3) ? reject(err3) : resolve();
-                });
+            return Repo.create(repoData).then(repo => {
+                branchData.repo = repo._id;
+                return Branch.create(branchData)
+                    .then(branch => {
+                        buildData.branch = branch._id;
+                        return Build.create(buildData)
+                            .then(build => {
+                                console.log('Seeding model data finished');
+                                return Promise.resolve(true);
+                            });
+                    });
             });
         });
-    });
 };

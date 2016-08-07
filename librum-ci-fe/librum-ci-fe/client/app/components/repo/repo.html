@@ -1,15 +1,31 @@
 <navbar></navbar>
-<h1>Repositories</h1>
+<h1><a target="_blank" href="{{$ctrl.repo.url}}">{{$ctrl.repo.slug}}</a></h1>
 <section>
   <div class='error'>{{$ctrl.error}}</div>
 
-  <div ng-repeat="repo in $ctrl.repos">
-    <h2>{{repo.slug}}</h2>
-    <div>
-      {{repo.createdAt}} | {{repo.cloneUrl}}
-    </div>
-    <div>
-      {{repo.url}} | {{repo.description}} | {{repo.updatedAt}}
-    </div>
+  <h3>
+    Created: {{$ctrl.repo.createdAt}} | Last Updated: {{$ctrl.repo.updatedAt}}
+  </h3>
+  <h4>
+    Created: {{$ctrl.repo.createdAt}} | Last Updated: {{$ctrl.repo.updatedAt}}
+  </h4>
+  <div>
+    {{$ctrl.repo.description}}
   </div>
+
+  <h2>Builds</h2>
+  <ul ng-repeat="build in $ctrl.repo.builds">
+    <li>
+      <h4>
+        ID: {{build._id}} | State: {{build.state}}
+      </h4>
+      <h4>
+        Branch: {{build.branch.slug.split('refs/heads/')[1]}} (<a target="_blank" href="{{build.compareUrl}}">{{build.compareUrl.split('compare/')[1]}})</a>
+      </h4>
+      <h4>
+        Created: {{build.createdAt}} | Last Updated: {{build.updatedAt}}
+      </h4>
+    </li>
+  </div>
+
 </section>
