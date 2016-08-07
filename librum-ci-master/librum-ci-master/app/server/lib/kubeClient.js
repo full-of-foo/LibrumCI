@@ -15,11 +15,12 @@ const reqOpts = {
 
 Client.prototype.streamPodUntilPhase = function(pod, desiredPhase = 'Succeeded') {
     const nameLabel = pod.metadata.labels.name;
-    reqOpts.qs = {labelSelector: `name=${nameLabel}`, watch: true};
+    const opts = Object.assign({}, reqOpts);
+    opts.qs = {labelSelector: `name=${nameLabel}`, watch: true};
 
     console.log(`Streaming '${nameLabel}' until '${desiredPhase}'`);
     return new Promise((resolve, reject) => {
-        request.get(reqOpts)
+        request.get(opts)
             .on('error', err => reject(pod))
             .pipe(JSONStream.parse([{emitKey: true}], data => {
                 return (data && data.constructor === Object && 'kind' in data) ? data : null;
@@ -40,6 +41,17 @@ Client.prototype.streamPodUntilPhase = function(pod, desiredPhase = 'Succeeded')
                 // TODO - assert container not in 'State: Waiting, Reason: RunContainerError'
             })
             .on('end', () => resolve(pod)); // TODO - remove?
+    });
+};
+
+Client.prototype.getPodLogs = function(pod) {
+    const opts = Object.assign({}, reqOpts);
+    opts.url = `${podsUrl}/${pod.metadata.name}/log`;
+    return new Promise((resolve, reject) => {
+        request.get(opts, (err, res, body) => {
+            if (err) reject(pod);
+            resolve(body);
+        });
     });
 };
 

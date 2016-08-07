@@ -1,3 +1,5 @@
+import Promise from 'bluebird';
+
 const schemaOpts = {
     versionKey: false,
     strict: true,

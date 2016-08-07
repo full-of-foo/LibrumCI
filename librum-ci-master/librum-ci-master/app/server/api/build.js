@@ -8,6 +8,32 @@ import kubeClient from '../lib/kubeClient';
 const router = Router();
 const CastError = mongoose.Error.CastError;
 
+const _runPipelinePhase = (PodBuilder, podArgs, phaseName, build) => {
+    const phaseMetadata = {state: 'Running'};
+    phaseMetadata[phaseName] = {};
+    phaseMetadata[phaseName].startedAt = new Date();
+
+    return Build.findOneAndUpdate({_id: build._id}, phaseMetadata, {new: true}).exec()
+        .then(() => PodBuilder.createPod(podArgs))
+        .then(pod => {
+            phaseMetadata[phaseName].podName = pod.metadata.name;
+            return Build.findOneAndUpdate({_id: build._id}, phaseMetadata, {new: true}).exec()
+                        .then(() => Promise.resolve(pod));
+        })
+        .then(pod => kubeClient.streamPodUntilPhase(pod))
+        .then(pod => {
+            return kubeClient.getPodLogs(pod)
+                    .then(logs => {
+                        phaseMetadata.state = 'Success';
+                        phaseMetadata[phaseName].logs = logs;
+                        phaseMetadata[phaseName].finishedAt = new Date();
+                        return Build.findOneAndUpdate({_id: build._id}, phaseMetadata, {new: true}).exec()
+                                    .then(() => Promise.resolve(pod));
+                    });
+        })
+        .then(pod => kubeClient.deletePod(pod));
+};
+
 const createAndStreamBuildPipeline = build => {
     const branch = build.branch;
     const repo = branch.repo;
@@ -17,27 +43,9 @@ const createAndStreamBuildPipeline = build => {
     const testRunnerArgs = Object.assign(basePodArgs, {runCommand:repo.dockerRunCommand});
 
     // TODO - speed up build by doing deletes async afterwards
-    return GitSyncPodBuilder.createPod(gitPodArgs)
-        .then(gsp => kubeClient.streamPodUntilPhase(gsp))
-        .then(gsp => {
-            return Build.upsert({_id: build.buildId}, {gitSync:{podName:gsp.metadata.name}})
-                        .then(() => Promise.resolve(gsp));
-        })
-        .then(gsp => kubeClient.deletePod(gsp))
-        .then(() => ImageSyncPodBuilder.createPod(basePodArgs))
-        .then(isp => kubeClient.streamPodUntilPhase(isp))
-        .then(isp => {
-            return Build.upsert({_id: build.buildId}, {imageSync:{podName:isp.metadata.name}})
-                .then(() => Promise.resolve(isp));
-        })
-        .then(isp => kubeClient.deletePod(isp))
-        .then(() => TestRunnerPodBuilder.createPod(testRunnerArgs))
-        .then(trp => kubeClient.streamPodUntilPhase(trp))
-        .then(trp => {
-            return Build.upsert({_id: build.buildId}, {testRunner:{podName:trp.metadata.name}})
-                .then(() => Promise.resolve(trp));
-        })
-        .then(trp => kubeClient.deletePod(trp));
+    return _runPipelinePhase(GitSyncPodBuilder, gitPodArgs, 'gitSync', build)
+        .then(() => _runPipelinePhase(ImageSyncPodBuilder, basePodArgs, 'imageSync', build))
+        .then(() => _runPipelinePhase(TestRunnerPodBuilder, testRunnerArgs, 'testRunner', build));
 };
 
 router.route('/')

@@ -8,17 +8,20 @@ const BuildSchema = new mongoose.Schema({
     gitSync: {
         podName: String,
         startedAt: Date,
-        finishedAt: Date
+        finishedAt: Date,
+        logs: String
     },
     imageSync: {
         podName: String,
         startedAt: Date,
-        finishedAt: Date
+        finishedAt: Date,
+        logs: String
     },
     testRunner: {
         podName: String,
         startedAt: Date,
-        finishedAt: Date
+        finishedAt: Date,
+        logs: String
     },
     commits: [{
         sha: {type: String, required: true},

@@ -13,7 +13,7 @@ const _extractRepoData = payload => {
 };
 const _extractBuildData = payload => {
     return {
-        state: 'queued',
+        state: 'Queued',
         compareUrl: payload.compare,
         commits: payload.commits.map(c => {
             return {

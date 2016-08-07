@@ -6,9 +6,6 @@
   <h3>
     Created: {{$ctrl.repo.createdAt}} | Last Updated: {{$ctrl.repo.updatedAt}}
   </h3>
-  <h4>
-    Created: {{$ctrl.repo.createdAt}} | Last Updated: {{$ctrl.repo.updatedAt}}
-  </h4>
   <div>
     {{$ctrl.repo.description}}
   </div>
@@ -17,7 +14,7 @@
   <ul ng-repeat="build in $ctrl.repo.builds">
     <li>
       <h4>
-        ID: {{build._id}} | State: {{build.state}}
+        <a href="/#/build/{{build._id}}">ID: {{build._id}} ({{build.state}})</a>
       </h4>
       <h4>
         Branch: {{build.branch.slug.split('refs/heads/')[1]}} (<a target="_blank" href="{{build.compareUrl}}">{{build.compareUrl.split('compare/')[1]}})</a>

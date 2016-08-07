@@ -1,6 +1,6 @@
 {
   "name": "librum-ci-models",
-  "version": "0.0.192",
+  "version": "0.0.194",
   "description": "TODO",
   "main": "lib/index.js",
   "scripts": {
