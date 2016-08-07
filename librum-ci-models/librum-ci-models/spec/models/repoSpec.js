@@ -2,9 +2,7 @@ import Repo from '../../lib/models/repo';
 
 const data = {
     slug: 'Started',
-    description: 'pew',
-    url: 'foo.bar',
-    cloneUrl: 'git:pewpew.git'
+    dockerRunCommand: 'echo pew'
 };
 
 describe('Model: Repo', () => {

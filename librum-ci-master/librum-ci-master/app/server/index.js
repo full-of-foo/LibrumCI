@@ -16,9 +16,7 @@ const createServer = () => {
     app.use(cors({exposedHeaders: ['Link']}));
     app.use(bodyParser.json({limit : '100kb'}));
     app.use(errorhandler());
-    Promise.onPossiblyUnhandledRejection(error => {
-        throw error;
-    });
+    Promise.onPossiblyUnhandledRejection(err => console.error(err));
 
     db(config, () => {
         app.use(middleware());

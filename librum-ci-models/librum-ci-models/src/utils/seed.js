@@ -5,6 +5,7 @@ import Build from '../models/build';
 const repoData = {
     slug: 'full-of-foo/sample-libreci-app',
     description: null,
+    dockerRunCommand: 'echo pew;',
     url: 'https://github.com/full-of-foo/sample-libreci-app',
     cloneUrl: 'https://github.com/full-of-foo/sample-libreci-app.git'
 };

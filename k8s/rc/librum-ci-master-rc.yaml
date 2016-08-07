@@ -24,3 +24,8 @@ spec:
         env:
         - name: NODE_ENV
           value: production
+        - name: DOCKER_HUB_USER
+          valueFrom:
+            secretKeyRef:
+              name: docker-hub-creds
+              key: docker-hub-user

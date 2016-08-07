@@ -32,7 +32,7 @@
             }
           }
         ],
-        "image": "toeknee/librum-ci-image-sync:0.03",
+        "image": "toeknee/librum-ci-image-sync:0.04",
         "name": "image-sync",
         "volumeMounts": [
           {

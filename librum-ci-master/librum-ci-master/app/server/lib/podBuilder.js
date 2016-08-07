@@ -5,6 +5,7 @@ import kubeClient from './kubeClient';
 const SHARED_REPOS_DIR = '/git-repos';
 const gitSyncTemplate = require('./podTemplates/git-sync.json');
 const imageSyncTemplate = require('./podTemplates/image-sync.json');
+const testRunnerTemplate = require('./podTemplates/test-runner.json');
 
 class PodBuilder {
     static createPod(args) {
@@ -20,9 +21,9 @@ class PodBuilder {
 
 class GitSyncPodBuilder extends PodBuilder {
     static _generatePodSpec(args) {
+        let {buildId, repoSlug, cloneUrl, branch, sha} = args;
         const templ = JSON.parse(JSON.stringify(gitSyncTemplate));
         const uid = crypto.randomBytes(20).toString('hex');
-        let {buildId, repoSlug, cloneUrl, branch, sha} = args;
         branch = branch.startsWith('refs/heads/') ? branch.split('refs/heads/')[1] : branch;
 
         templ.metadata.labels.name = `git-sync-${uid}`;
@@ -46,23 +47,41 @@ class GitSyncPodBuilder extends PodBuilder {
 
 class ImageSyncPodBuilder extends PodBuilder {
     static _generatePodSpec(args) {
+        const {buildId, repoSlug} = args;
         const templ = JSON.parse(JSON.stringify(imageSyncTemplate));
         const uid = crypto.randomBytes(20).toString('hex');
+        const user = process.env.DOCKER_HUB_USER;
+        const safeRepoSlug = repoSlug.replace(/\//g, '-');
+        const fullBuildName = `${user}/librum-ci-build-${safeRepoSlug}:${buildId}`;
 
         templ.metadata.labels.name = `image-sync-${uid}`;
-        templ.metadata.labels.build = args.buildId;
+        templ.metadata.labels.build = buildId;
         templ.spec.containers[0].env.push({
-            'name': 'BUILD_ID',
-            'value': args.buildId
-        }, {
-            'name': 'REPO_NAME',
-            'value': args.repoSlug
+            'name': 'FULL_BUILD_NAME',
+            'value': fullBuildName
         }, {
             'name': 'REPO_DIR',
-            'value': `${SHARED_REPOS_DIR}/${args.repoSlug}`
+            'value': `${SHARED_REPOS_DIR}/${repoSlug}`
         });
         return templ;
     }
 }
 
-export {GitSyncPodBuilder, ImageSyncPodBuilder};
+class TestRunnerPodBuilder extends PodBuilder {
+    static _generatePodSpec(args) {
+        const {buildId, repoSlug, runCommand} = args;
+        const templ = JSON.parse(JSON.stringify(testRunnerTemplate));
+        const uid = crypto.randomBytes(20).toString('hex');
+        const user = process.env.DOCKER_HUB_USER;
+        const safeRepoSlug = repoSlug.replace(/\//g, '-');
+        const fullBuildName = `${user}/librum-ci-build-${safeRepoSlug}:${buildId}`;
+
+        templ.metadata.labels.name = `test-runner-${uid}`;
+        templ.metadata.labels.build = args.buildId;
+        templ.spec.containers[0].image = fullBuildName;
+        templ.spec.containers[0].command = runCommand.split(' ');
+        return templ;
+    }
+}
+
+export {GitSyncPodBuilder, ImageSyncPodBuilder, TestRunnerPodBuilder};

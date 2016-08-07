@@ -1,0 +1,21 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "namespace": "librum-ci",
+    "generateName": "test-runner-",
+    "labels": {
+      "group": "test-runner"
+    }
+  },
+  "spec": {
+    "restartPolicy": "Never",
+    "containers": [
+      {
+        "name": "test-runner",
+        "command": []
+      }
+    ]
+
+  }
+}
