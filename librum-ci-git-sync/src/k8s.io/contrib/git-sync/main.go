@@ -128,8 +128,17 @@ func main() {
 
 // syncRepo syncs the branch of a given repository to the destination at the given rev.
 func syncRepo(repo, dest, branch, rev string, depth int) error {
+	_, err := runCommand("git", "", []string{"config", "--global", "user.email", "git.sync@git.com"})
+	if err != nil {
+		return err
+	}
+	_, err = runCommand("git", "", []string{"config", "--global", "user.name", "Git Sync"})
+	if err != nil {
+		return err
+	}
+
 	gitRepoPath := path.Join(dest, ".git")
-	_, err := os.Stat(gitRepoPath)
+	_, err = os.Stat(gitRepoPath)
 	switch {
 	case os.IsNotExist(err):
 		// clone repo
@@ -151,7 +160,7 @@ func syncRepo(repo, dest, branch, rev string, depth int) error {
 	}
 
 	// fetch branch
-	output, err := runCommand("git", dest, []string{"pull", "origin", branch})
+	output, err := runCommand("git", dest, []string{"fetch", "--prune", "origin", branch})
 	if err != nil {
 		return err
 	}

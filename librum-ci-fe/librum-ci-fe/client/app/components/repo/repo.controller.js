@@ -5,9 +5,7 @@ export default class RepoController {
         this.repo = {};
         this.repoResource = repoResource;
         this.repoResource.get($stateParams.id)
-            .then(res => {
-                this.repo = res.data;
-            })
+            .then(res => this.repo = res.data)
             .catch(err => this.error = err);
     }
 }

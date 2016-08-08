@@ -17,4 +17,8 @@ export default class RepoResource {
     post(data) {
         return this.$http.post(this.baseUrl, data);
     }
+
+    put(id, data) {
+        return this.$http.put(`${this.baseUrl}${id}`, data);
+    }
 }

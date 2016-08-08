@@ -5,9 +5,18 @@
 
   <div>
     <form novalidate class="simple-form">
-      GitHub Slug: <input type="text" ng-model="$ctrl.newRepo.slug" /><br />
-      Test Run Command: <input type="text" ng-model="$ctrl.newRepo.dockerRunCommand" /><br />
-      <input type="submit" ng-disabled="$ctrl.isSaving" ng-click="$ctrl.save()" value="Save" />
+      *GitHub Slug: <input type="text" ng-disabled="$ctrl.isUpdating" ng-model="$ctrl.repo.slug" /><br />
+      *Test Run Command: <input type="text" ng-model="$ctrl.repo.dockerRunCommand" /><br />
+      Build and Test Image Enviornment Varibles: <button ng-disabled="$ctrl.isSaving" ng-click="$ctrl.addBlankEnvVar()">+</button><br />
+      <ul>
+        <li ng-repeat="envVar in $ctrl.repo.envVars">
+          Key: <input type="text" ng-model="envVar.key"/> | Value: <input type="text" ng-model="envVar.value"/>
+          <button ng-disabled="$ctrl.isSaving" ng-show="$ctrl.repo.envVars.length > 1" ng-click="$ctrl.removeEnvVar(envVar)">Remove</button>
+        </li>
+      </ul>
+
+      <input type="submit" ng-show="!$ctrl.isUpdating" ng-disabled="$ctrl.isSaving" ng-click="$ctrl.save()" value="Save" />
+      <input type="submit" ng-show="$ctrl.isUpdating" ng-disabled="$ctrl.isSaving" ng-click="$ctrl.update()" value="Update" />
     </form>
   </div>
 </section>

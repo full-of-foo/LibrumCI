@@ -15,6 +15,7 @@ const _runPipelinePhase = (PodBuilder, podArgs, phaseName, build) => {
 
     return Build.findOneAndUpdate({_id: build._id}, phaseMetadata, {new: true}).exec()
         .then(() => PodBuilder.createPod(podArgs))
+        .catch(e => console.error(e))
         .then(pod => {
             phaseMetadata[phaseName].podName = pod.metadata.name;
             return Build.findOneAndUpdate({_id: build._id}, phaseMetadata, {new: true}).exec()
@@ -38,9 +39,9 @@ const createAndStreamBuildPipeline = build => {
     const branch = build.branch;
     const repo = branch.repo;
     const sha = build.commits.filter(c => c.isHead)[0].sha;
-    const basePodArgs = {buildId:build.buildId, repoSlug:repo.slug};
+    const basePodArgs = {buildId:build._id, repoSlug:repo.slug};
     const gitPodArgs = Object.assign(basePodArgs, {cloneUrl:repo.cloneUrl, branch:branch.slug, sha:sha});
-    const testRunnerArgs = Object.assign(basePodArgs, {runCommand:repo.dockerRunCommand});
+    const testRunnerArgs = Object.assign(basePodArgs, {runCommand:repo.dockerRunCommand, envVars:repo.envVars});
 
     // TODO - speed up build by doing deletes async afterwards
     return _runPipelinePhase(GitSyncPodBuilder, gitPodArgs, 'gitSync', build)
@@ -59,7 +60,7 @@ router.route('/:id')
         Build.findOne({_id: req.params.id})
             .populate({path:'branch', populate:{path:'repo'}}).exec()
             .catch(CastError, err => res.status(404).send(err))
-            .then(repo => repo ? res.json(repo): res.status(404).send({}))
+            .then(build => build ? res.json(build): res.status(404).send({}))
             .error(err => res.status(500).send(err));
     });
 router.route('/:id/schedule')

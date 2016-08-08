@@ -28,18 +28,18 @@ class GitSyncPodBuilder extends PodBuilder {
 
         templ.metadata.labels.name = `git-sync-${uid}`;
         templ.metadata.labels.build = buildId;
-        templ.spec.containers[0]['env'].push({
-            'name': 'GIT_SYNC_REPO',
-            'value': cloneUrl
+        templ.spec.containers[0].env.push({
+            name: 'GIT_SYNC_REPO',
+            value: cloneUrl
         }, {
-            'name': 'GIT_SYNC_DEST',
-            'value': `${SHARED_REPOS_DIR}/${repoSlug}`
+            name: 'GIT_SYNC_DEST',
+            value: `${SHARED_REPOS_DIR}/${repoSlug}`
         }, {
-            'name': 'GIT_SYNC_BRANCH',
-            'value': branch
+            name: 'GIT_SYNC_BRANCH',
+            value: branch
         }, {
-            'name': 'GIT_SYNC_REV',
-            'value': sha
+            name: 'GIT_SYNC_REV',
+            value: sha
         });
         return templ;
     }
@@ -57,11 +57,11 @@ class ImageSyncPodBuilder extends PodBuilder {
         templ.metadata.labels.name = `image-sync-${uid}`;
         templ.metadata.labels.build = buildId;
         templ.spec.containers[0].env.push({
-            'name': 'FULL_BUILD_NAME',
-            'value': fullBuildName
+            name: 'FULL_BUILD_NAME',
+            value: fullBuildName
         }, {
-            'name': 'REPO_DIR',
-            'value': `${SHARED_REPOS_DIR}/${repoSlug}`
+            name: 'REPO_DIR',
+            value: `${SHARED_REPOS_DIR}/${repoSlug}`
         });
         return templ;
     }
@@ -69,7 +69,7 @@ class ImageSyncPodBuilder extends PodBuilder {
 
 class TestRunnerPodBuilder extends PodBuilder {
     static _generatePodSpec(args) {
-        const {buildId, repoSlug, runCommand} = args;
+        const {buildId, repoSlug, envVars, runCommand} = args;
         const templ = JSON.parse(JSON.stringify(testRunnerTemplate));
         const uid = crypto.randomBytes(20).toString('hex');
         const user = process.env.DOCKER_HUB_USER;
@@ -80,6 +80,12 @@ class TestRunnerPodBuilder extends PodBuilder {
         templ.metadata.labels.build = args.buildId;
         templ.spec.containers[0].image = fullBuildName;
         templ.spec.containers[0].command = runCommand.split(' ');
+        if (envVars && envVars.length) {
+            for (const envVar of envVars) {
+                templ.spec.containers[0].env = [];
+                templ.spec.containers[0].env.push({name: envVar.key, value: envVar.value});
+            }
+        }
         return templ;
     }
 }

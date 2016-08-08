@@ -22,7 +22,7 @@
                         "value": "1"
                     }
                 ],
-                "image": "toeknee/librum-ci-git-sync:0.01",
+                "image": "toeknee/librum-ci-git-sync:0.03",
                 "name": "git-sync",
                 "volumeMounts": [
                     {

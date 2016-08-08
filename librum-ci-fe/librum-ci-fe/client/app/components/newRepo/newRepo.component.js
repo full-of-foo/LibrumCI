@@ -4,7 +4,7 @@ import './newRepo.styl';
 
 export default {
     bindings: {
-        newRepo: '='
+        repo: '='
     },
     template: template,
     bindToController: true,
