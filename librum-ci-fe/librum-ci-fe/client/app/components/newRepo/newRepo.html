@@ -1,0 +1,13 @@
+<navbar></navbar>
+<h1>New Repository</h1>
+<section>
+  <div class='error'>{{$ctrl.error}}</div>
+
+  <div>
+    <form novalidate class="simple-form">
+      GitHub Slug: <input type="text" ng-model="$ctrl.newRepo.slug" /><br />
+      Test Run Command: <input type="text" ng-model="$ctrl.newRepo.dockerRunCommand" /><br />
+      <input type="submit" ng-disabled="$ctrl.isSaving" ng-click="$ctrl.save()" value="Save" />
+    </form>
+  </div>
+</section>

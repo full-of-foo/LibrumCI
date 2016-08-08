@@ -4,7 +4,7 @@ import reposComponent from './repos.component';
 
 export default angular.module('repos', [uiRouter])
     .config($stateProvider => {
-        "ngInject";
+        'ngInject';
         $stateProvider.state('repos', {url: '/repos', component: 'repos'});
     })
     .component('repos', reposComponent)

@@ -1,6 +1,6 @@
 export default class RepoController {
     constructor(repoResource, $stateParams) {
-        "ngInject";
+        'ngInject';
 
         this.repo = {};
         this.repoResource = repoResource;

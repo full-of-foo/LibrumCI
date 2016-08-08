@@ -1,6 +1,6 @@
 class HeroController {
     constructor(githooksUrl) {
-        "ngInject";
+        'ngInject';
 
         this.name = 'hero';
         this.githooksUrl = githooksUrl;

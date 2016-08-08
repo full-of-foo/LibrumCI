@@ -1,6 +1,6 @@
 export default class BuildController {
     constructor(buildResource, $stateParams) {
-        "ngInject";
+        'ngInject';
 
         this.build = {};
         this.buildResource = buildResource;

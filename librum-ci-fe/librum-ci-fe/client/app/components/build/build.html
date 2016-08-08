@@ -1,5 +1,5 @@
 <navbar></navbar>
-<h1>BUILD: {{$ctrl.build._id}} (<a target="_blank" href="{{$ctrl.build.branch.repo.url}}">{{$ctrl.build.branch.repo.slug}}</a>)</h1>
+<h1>BUILD: {{$ctrl.build._id}} (<a href="/#/repo/{{$ctrl.build.branch.repo._id}}">{{$ctrl.build.branch.repo.slug}}</a>)</h1>
 <h1 class="pull-right">{{$ctrl.build.state}}</h1>
 <section>
   <div class='error'>{{$ctrl.error}}</div>
@@ -11,7 +11,7 @@
   <div ng-show="$ctrl.build.gitSync && $ctrl.build.gitSync.startedAt">
     <h4>Repoistory Synchronise</h4>
     <div>
-      <span>Strated: {{$ctrl.build.gitSync.startedAt}}<span> <span ng-show="$ctrl.build.gitSync.finishedAt"> | Finished: {{$ctrl.build.gitSync.finishedAt}}</span>
+      <span>Started: {{$ctrl.build.gitSync.startedAt}}<span> <span ng-show="$ctrl.build.gitSync.finishedAt"> | Finished: {{$ctrl.build.gitSync.finishedAt}}</span>
       <span ng-show="$ctrl.build.gitSync.podName"> | Pod: {{$ctrl.build.gitSync.podName}}</span>
       <pre ng-show="$ctrl.build.gitSync.logs">
         <div>{{$ctrl.build.gitSync.logs}}</div>
@@ -21,7 +21,7 @@
   <div ng-show="$ctrl.build.imageSync && $ctrl.build.imageSync.startedAt">
     <h4>Image Build</h4>
     <div>
-      <span>Strated: {{$ctrl.build.imageSync.startedAt}}<span> <span ng-show="$ctrl.build.imageSync.finishedAt"> | Finished: {{$ctrl.build.imageSync.finishedAt}}</span>
+      <span>Started: {{$ctrl.build.imageSync.startedAt}}<span> <span ng-show="$ctrl.build.imageSync.finishedAt"> | Finished: {{$ctrl.build.imageSync.finishedAt}}</span>
       <span ng-show="$ctrl.build.imageSync.podName"> | Pod: {{$ctrl.build.imageSync.podName}}</span>
       <pre ng-show="$ctrl.build.imageSync.logs">
         <div>{{$ctrl.build.imageSync.logs}}</div>
@@ -31,7 +31,7 @@
   <div ng-show="$ctrl.build.testRunner && $ctrl.build.testRunner.startedAt">
     <h4>Tests</h4>
     <div>
-      <span>Strated: {{$ctrl.build.testRunner.startedAt}}<span> <span ng-show="$ctrl.build.testRunner.finishedAt"> | Finished: {{$ctrl.build.imageSync.finishedAt}}</span>
+      <span>Started: {{$ctrl.build.testRunner.startedAt}}<span> <span ng-show="$ctrl.build.testRunner.finishedAt"> | Finished: {{$ctrl.build.imageSync.finishedAt}}</span>
       <span ng-show="$ctrl.build.testRunner.podName"> | Pod: {{$ctrl.build.testRunner.podName}}</span>
       <pre ng-show="$ctrl.build.testRunner.logs">
         <div>{{$ctrl.build.testRunner.logs}}</div>

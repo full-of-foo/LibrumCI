@@ -4,7 +4,7 @@ import homeComponent from './home.component';
 
 const homeModule = angular.module('home', [uiRouter])
     .config(($stateProvider, $urlRouterProvider) => {
-        "ngInject";
+        'ngInject';
 
         $urlRouterProvider.otherwise('/');
         $stateProvider.state('home', {url: '/',component: 'home'});

@@ -1,6 +1,6 @@
 class ReposController {
     constructor(repoResource) {
-        "ngInject";
+        'ngInject';
 
         this.repos = [];
         this.repoResource = repoResource;

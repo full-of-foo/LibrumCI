@@ -4,7 +4,7 @@ import buildComponent from './build.component';
 
 export default angular.module('build', [uiRouter])
     .config($stateProvider => {
-        "ngInject";
+        'ngInject';
         $stateProvider.state('build', {url: '/build/:id', component: 'build'});
     })
     .component('build', buildComponent)

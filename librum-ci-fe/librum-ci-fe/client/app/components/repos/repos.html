@@ -2,6 +2,7 @@
 <h1>Repositories</h1>
 <section>
   <div class='error'>{{$ctrl.error}}</div>
+  <a href="/#/newRepo">Add Repository</a>
 
   <div ng-repeat="repo in $ctrl.repos">
     <h2><a href="/#/repo/{{repo._id}}">{{repo.slug}}</a></h2>

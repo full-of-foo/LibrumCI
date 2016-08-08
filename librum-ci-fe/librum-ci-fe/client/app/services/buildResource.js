@@ -1,6 +1,6 @@
 export default class BuildResource {
     constructor($http, masterUrl) {
-        "ngInject";
+        'ngInject';
 
         this.$http = $http;
         this.baseUrl = `${masterUrl}/api/build/`;
