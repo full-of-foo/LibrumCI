@@ -1,15 +1,14 @@
 FROM ubuntu:16.04
+LABEL Description="Base image for all long-living LibrumCI containers"
 
-##### Linux
+##### Linux and Node
 ENV DEBIAN_FRONTEND noninteractive
-RUN set -ex \
-  && apt-get update \
-  && apt-get install -y --force-yes apt-utils curl git libstdc++6
-
-
-##### Node
 ENV NPM_CONFIG_LOGLEVEL info
 RUN set -ex \
+  && apt-get update \
+  && apt-get install -y --force-yes apt-utils curl git \
   && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
   && apt-get install --force-yes -y nodejs \
-  && npm config set registry https://registry.npmjs.org/
+  && npm config set registry https://registry.npmjs.org/ \
+  && rm -rf /var/lib/apt/lists/* \
+  && apt-get purge -y --auto-remove apt-utils curl

@@ -1,4 +1,4 @@
-FROM toeknee/librum-ci-xenial-node:0.01
+FROM toeknee/librum-ci-xenial-node:0.02
 
 ##### App
 COPY librum-ci-master/package.json /tmp/package.json
