@@ -1,29 +1,49 @@
 <navbar></navbar>
-<h1><a target="_blank" href="{{$ctrl.repo.url}}">{{$ctrl.repo.slug}}</a></h1>
-<a class="pull-right" href="/#/newRepo?isUpdating={{$ctrl.repo._id}}">Update</a>
-<section>
-  <div class='error'>{{$ctrl.error}}</div>
 
-  <h3>
-    Created: {{$ctrl.repo.createdAt}} | Last Updated: {{$ctrl.repo.updatedAt}}
-  </h3>
-  <div>
+<div ng-show="$ctrl.error" class="alert alert-danger" role="alert">
+  <strong>Error!</strong> {{$ctrl.error}}
+</div>
+
+<div ng-show="!$ctrl.error && $ctrl.repo">
+  <div class="page-header">
+    <h1><a target="_blank" href="{{$ctrl.repo.url}}">{{$ctrl.repo.slug}}</a></h1>
+  </div>
+
+  <div class="row timestamp-info">
+    <h4 class="col-md-10">
+      <span class="crumb">Created: {{$ctrl.repo.createdAt | date:"dd/MM/yyyy h:mma"}}</span>
+      <span>Last Updated: {{$ctrl.repo.updatedAt | date:"dd/MM/yyyy h:mma"}}</span>
+    </h4>
+    <a class="col-md-1 btn btn-default" href="/#/newRepo?isUpdating={{$ctrl.repo._id}}" role="button">Update</a>
+  </div>
+  <div ng-show="$ctrl.repo.description" class="row well">
     {{$ctrl.repo.description}}
   </div>
 
-  <h2>Builds</h2>
-  <ul ng-repeat="build in $ctrl.repo.builds">
-    <li>
-      <h4>
-        <a href="/#/build/{{build._id}}">ID: {{build._id}} ({{build.state}})</a>
-      </h4>
-      <h4>
-        Branch: {{build.branch.slug.split('refs/heads/')[1]}} (<a target="_blank" href="{{build.compareUrl}}">{{build.compareUrl.split('compare/')[1]}})</a>
-      </h4>
-      <h4>
-        Created: {{build.createdAt}} | Last Updated: {{build.updatedAt}}
-      </h4>
-    </li>
+  <div class="form-group">
+    &nbsp;
   </div>
+  <ul ng-repeat="build in $ctrl.repo.builds" class="list-group">
+    <li class="list-group-item">
+      <div class="row ml-0-pc">
+        <h4>
+          <span><a href="/#/build/{{build._id}}">Build: {{build._id}}</a></span>
+          <span ng-show="build.state && build.state.toUpperCase() === 'SCHEDULED'" class="pull-right col-md-1 mr-1-pc label label-default">Scheduled</span>
+          <span ng-show="build.state && build.state.toUpperCase() === 'SUCCESS'" class="pull-right col-md-1 mr-1-pc label label-success">Success</span>
+          <span ng-show="build.state && build.state.toUpperCase() === 'RUNNING'" class="pull-right col-md-1 mr-1-pc label label-info">Running</span>
+          <span ng-show="build.state && build.state.toUpperCase() === 'FAILED'" class="pull-right col-md-1 mr-1-pc label label-danger">Failed</span>
+        </h4>
+      </div>
+      <div class="row ml-0-pc">
+        <span class="crumb">Created: {{$ctrl.repo.createdAt | date:"dd/MM/yyyy h:mma"}}</span>
+        <span>Last Updated: {{$ctrl.repo.updatedAt | date:"dd/MM/yyyy h:mma"}}</span>
+      </div>
+      <div class="row ml-0-pc">
+        <span class="crumb">Branch: {{build.branch.slug.split('refs/heads/')[1]}}</span>
+        <span>Ref: <a target="_blank" href="{{build.compareUrl}}">{{build.compareUrl.split('compare/')[1]}}</a></span>
+      </div>
+    </div>
+    </li>
+  </ul>
 
-</section>
+</div>

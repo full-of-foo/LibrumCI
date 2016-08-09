@@ -1,4 +1,4 @@
-class HeroController {
+export default class HeroController {
     constructor(githooksUrl) {
         'ngInject';
 
@@ -6,5 +6,3 @@ class HeroController {
         this.githooksUrl = githooksUrl;
     }
 }
-
-export default HeroController;

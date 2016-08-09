@@ -1,41 +1,85 @@
 <navbar></navbar>
-<h1>BUILD: {{$ctrl.build._id}} (<a href="/#/repo/{{$ctrl.build.branch.repo._id}}">{{$ctrl.build.branch.repo.slug}}</a>)</h1>
-<h1 class="pull-right">{{$ctrl.build.state}}</h1>
-<section>
-  <div class='error'>{{$ctrl.error}}</div>
 
-  <h3>
-    Created: {{$ctrl.build.createdAt}} | Last Updated: {{$ctrl.build.updatedAt}}
-  </h3>
 
-  <div ng-show="$ctrl.build.gitSync && $ctrl.build.gitSync.startedAt">
-    <h4>Repoistory Synchronise</h4>
-    <div>
-      <span>Started: {{$ctrl.build.gitSync.startedAt}}<span> <span ng-show="$ctrl.build.gitSync.finishedAt"> | Finished: {{$ctrl.build.gitSync.finishedAt}}</span>
-      <span ng-show="$ctrl.build.gitSync.podName"> | Pod: {{$ctrl.build.gitSync.podName}}</span>
-      <pre ng-show="$ctrl.build.gitSync.logs">
-        <div>{{$ctrl.build.gitSync.logs}}</div>
-      </pre>
+<div ng-show="$ctrl.error" class="alert alert-danger" role="alert">
+  <strong>Error!</strong> {{$ctrl.error}}
+</div>
+
+<div ng-show="!$ctrl.error && $ctrl.build">
+  <div class="row">
+    <h3 class="col-md-10"><a class="crumb" href="/#/repo/{{$ctrl.build.branch.repo._id}}">{{$ctrl.build.branch.repo.slug}}</a> <span class="crumb">build</span> {{$ctrl.build._id}}</h3>
+    <span ng-show="$ctrl.build.state && $ctrl.build.state.toUpperCase() === 'SCHEDULED'" class="col-md-1 label label-default build-status">Scheduled</span>
+    <span ng-show="$ctrl.build.state && $ctrl.build.state.toUpperCase() === 'SUCCESS'" class="col-md-1 label label-success build-status">Success</span>
+    <span ng-show="$ctrl.build.state && $ctrl.build.state.toUpperCase() === 'RUNNING'" class="col-md-1 label label-info build-status">Running</span>
+    <span ng-show="$ctrl.build.state && $ctrl.build.state.toUpperCase() === 'FAILED'" class="col-md-1 label label-danger build-status">Failed</span>
+  </div>
+
+  <div class="row timestamp-info">
+    <h4>
+      <span class="crumb">Created: {{$ctrl.build.createdAt | date:"dd/MM/yyyy h:mma"}}</span>
+      <span>Last Updated: {{$ctrl.build.updatedAt | date:"dd/MM/yyyy h:mma"}}</span>
+    </h4>
+  </div>
+
+  <div class="form-group">
+    &nbsp;
+  </div>
+
+  <div class="row">
+    <div ng-show="$ctrl.build.gitSync && $ctrl.build.gitSync.startedAt" class="panel panel-default">
+      <div class="panel-heading">Repoistory Synchronise</div>
+      <div class="panel-body">
+        <div class="row mb-1-pc">
+          <div class="col-md-9">
+            <span ng-class="{crumb: $ctrl.build.gitSync.finishedAt}">Started: {{$ctrl.build.gitSync.startedAt | date:"dd/MM/yyyy h:mma"}}</span> <span ng-show="$ctrl.build.gitSync.finishedAt"> | Finished: {{$ctrl.build.gitSync.finishedAt | date:"dd/MM/yyyy h:mma"}}</span>
+          </div>
+          <div class="col-md-2">
+            <span class="label label-default pull-right" ng-show="$ctrl.build.gitSync.podName">pod: {{$ctrl.build.gitSync.podName}}</span>
+          </div>
+        </div>
+        <pre ng-show="$ctrl.build.gitSync.logs">
+          <div>{{$ctrl.build.gitSync.logs}}</div>
+        </pre>
+      </div>
     </div>
   </div>
-  <div ng-show="$ctrl.build.imageSync && $ctrl.build.imageSync.startedAt">
-    <h4>Image Build</h4>
-    <div>
-      <span>Started: {{$ctrl.build.imageSync.startedAt}}<span> <span ng-show="$ctrl.build.imageSync.finishedAt"> | Finished: {{$ctrl.build.imageSync.finishedAt}}</span>
-      <span ng-show="$ctrl.build.imageSync.podName"> | Pod: {{$ctrl.build.imageSync.podName}}</span>
-      <pre ng-show="$ctrl.build.imageSync.logs">
-        <div>{{$ctrl.build.imageSync.logs}}</div>
-      </pre>
+
+  <div class="row">
+    <div ng-show="$ctrl.build.imageSync && $ctrl.build.imageSync.startedAt" class="panel panel-default">
+      <div class="panel-heading">Image Build</div>
+      <div class="panel-body">
+        <div class="row mb-1-pc">
+          <div class="col-md-9">
+            <span ng-class="{crumb: $ctrl.build.imageSync.finishedAt}">Started: {{$ctrl.build.imageSync.startedAt | date:"dd/MM/yyyy h:mma"}}</span> <span ng-show="$ctrl.build.imageSync.finishedAt"> | Finished: {{$ctrl.build.imageSync.finishedAt | date:"dd/MM/yyyy h:mma"}}</span>
+          </div>
+          <div class="col-md-2">
+            <span class="label label-default pull-right" ng-show="$ctrl.build.imageSync.podName">pod: {{$ctrl.build.imageSync.podName}}</span>
+          </div>
+        </div>
+        <pre ng-show="$ctrl.build.imageSync.logs">
+          <div>{{$ctrl.build.imageSync.logs}}</div>
+        </pre>
+      </div>
     </div>
   </div>
-  <div ng-show="$ctrl.build.testRunner && $ctrl.build.testRunner.startedAt">
-    <h4>Tests</h4>
-    <div>
-      <span>Started: {{$ctrl.build.testRunner.startedAt}}<span> <span ng-show="$ctrl.build.testRunner.finishedAt"> | Finished: {{$ctrl.build.imageSync.finishedAt}}</span>
-      <span ng-show="$ctrl.build.testRunner.podName"> | Pod: {{$ctrl.build.testRunner.podName}}</span>
-      <pre ng-show="$ctrl.build.testRunner.logs">
-        <div>{{$ctrl.build.testRunner.logs}}</div>
-      </pre>
+
+  <div class="row">
+    <div ng-show="$ctrl.build.testRunner && $ctrl.build.testRunner.startedAt" class="panel panel-default">
+      <div class="panel-heading">Tests</div>
+      <div class="panel-body">
+        <div class="row mb-1-pc">
+          <div class="col-md-9">
+            <span ng-class="{crumb: $ctrl.build.testRunner.finishedAt}">Started: {{$ctrl.build.testRunner.startedAt | date:"dd/MM/yyyy h:mma"}}</span> <span ng-show="$ctrl.build.testRunner.finishedAt"> | Finished: {{$ctrl.build.testRunner.finishedAt | date:"dd/MM/yyyy h:mma"}}</span>
+          </div>
+          <div class="col-md-2">
+            <span class="label label-default pull-right" ng-show="$ctrl.build.testRunner.podName">pod: {{$ctrl.build.testRunner.podName}}</span>
+          </div>
+        </div>
+        <pre ng-show="$ctrl.build.testRunner.logs">
+          <div>{{$ctrl.build.testRunner.logs}}</div>
+        </pre>
+      </div>
     </div>
   </div>
-</section>
+</div>
+</div>

@@ -4,7 +4,6 @@ import {Repo} from 'librum-ci-models';
 import kubeClient from './../lib/kubeClient';
 import buildRouter from './build';
 import repoRouter from './repo';
-import branchRouter from './branch';
 
 const apiRouter = Router();
 
@@ -23,7 +22,6 @@ apiRouter.get('/', (req, res) => {
 });
 
 apiRouter.use('/build', buildRouter);
-repoRouter.use('/:repoSlug/branch', branchRouter);
 apiRouter.use('/repo', repoRouter);
 
 export default apiRouter;

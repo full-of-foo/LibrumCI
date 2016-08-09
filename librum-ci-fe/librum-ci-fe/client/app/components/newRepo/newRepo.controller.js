@@ -32,21 +32,23 @@ export default class NewRepoController {
             .finally(() => this.isSaving = false);
     }
 
-    _cleanEnvVars() {
+    _cleanData() {
         const filteredVars = this.repo.envVars.filter((e, i) => e && e.key && this.repo.envVars.indexOf(e) === i);
         this.repo.envVars = filteredVars.map(envVar => {
             envVar.key = envVar.key.toUpperCase();
             return envVar;
         });
+        if (!this.repo.slug && !this.repo.slug.trim()) this.repo.slug = null;
+        if (!this.repo.dockerRunCommand && !this.repo.dockerRunCommand.trim()) this.repo.dockerRunCommand = null;
     }
 
     save() {
-        this._cleanEnvVars();
+        this._cleanData();
         return this._saveOrUpdate(this.repoResource.post(this.repo));
     }
 
     update() {
-        this._cleanEnvVars();
+        this._cleanData();
         return this._saveOrUpdate(this.repoResource.put(this.isUpdating, this.repo));
     }
 

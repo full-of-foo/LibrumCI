@@ -1,7 +1,8 @@
-<section class="hero">
-  <h1>This is the Liberum CI frontend</h1>
-  <h3>Your webhook listener URL is: {{ $ctrl.githooksUrl}}</h3>
-  <h4>You add this to your repository via github.com/my-user/my-repo/settings/hooks</h4>
+<div class="jumbotron">
+  <h1>continuous container integration and delivery</h1>
+  <h2>...with all orchestration left to Kubernetes</h2>
 
-  <h4>You can then <a href="/#/newRepo">add your repository</a> to LibrumCI</h4>
-</section>
+  <p>Your webhook listener URL is: <mark>{{ $ctrl.githooksUrl}}</mark>. You add this to your repository via <mark>github.com/my-user/my-repo/settings/hooks</mark>
+  - the secret webhook key is <mark>lol</mark></p>.
+  <p>You can then <a href="/#/newRepo">add your repository</a> to Librum CI.</p>
+</div>

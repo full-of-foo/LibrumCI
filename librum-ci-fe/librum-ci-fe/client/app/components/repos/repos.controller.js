@@ -1,4 +1,4 @@
-class ReposController {
+export default class ReposController {
     constructor(repoResource) {
         'ngInject';
 
@@ -11,5 +11,3 @@ class ReposController {
             .catch(err => this.error = err);
     }
 }
-
-export default ReposController;

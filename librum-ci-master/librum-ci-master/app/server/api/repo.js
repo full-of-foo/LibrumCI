@@ -8,7 +8,7 @@ const CastError = mongoose.Error.CastError;
 
 router.route('/')
     .get((req, res) => {
-        Repo.find({}).exec()
+        Repo.find({}).sort('-createdAt').exec()
             .then(repos => res.json(repos))
             .error(err => res.status(500).send(err));
     })
@@ -29,7 +29,7 @@ router.route('/:id')
                 Branch.find({repo: repo._id}).exec()
                     .then(branches => {
                         Build.find({branch: {$in: branches.map(b => b._id)}})
-                            .populate('branch').exec()
+                            .sort('-createdAt').populate('branch').exec()
                             .then(builds => res.json(Object.assign(repo.toJSON(), {builds: builds})));
                     })
                     .error(err => res.status(500).send(err));

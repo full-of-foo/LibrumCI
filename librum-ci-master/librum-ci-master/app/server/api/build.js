@@ -1,57 +1,14 @@
 import {Router} from 'express';
 import {Build} from 'librum-ci-models';
 import mongoose from 'mongoose';
-import Promise from 'bluebird';
-import {GitSyncPodBuilder, ImageSyncPodBuilder, TestRunnerPodBuilder} from '../lib/podBuilder';
-import kubeClient from '../lib/kubeClient';
+import createBuildPipeline from './../lib/buildPipeline';
 
 const router = Router();
 const CastError = mongoose.Error.CastError;
 
-const _runPipelinePhase = (PodBuilder, podArgs, phaseName, build) => {
-    const phaseMetadata = {state: 'Running'};
-    phaseMetadata[phaseName] = {};
-    phaseMetadata[phaseName].startedAt = new Date();
-
-    return Build.findOneAndUpdate({_id: build._id}, phaseMetadata, {new: true}).exec()
-        .then(() => PodBuilder.createPod(podArgs))
-        .catch(e => console.error(e))
-        .then(pod => {
-            phaseMetadata[phaseName].podName = pod.metadata.name;
-            return Build.findOneAndUpdate({_id: build._id}, phaseMetadata, {new: true}).exec()
-                        .then(() => Promise.resolve(pod));
-        })
-        .then(pod => kubeClient.streamPodUntilPhase(pod))
-        .then(pod => {
-            return kubeClient.getPodLogs(pod)
-                    .then(logs => {
-                        phaseMetadata.state = 'Success';
-                        phaseMetadata[phaseName].logs = logs;
-                        phaseMetadata[phaseName].finishedAt = new Date();
-                        return Build.findOneAndUpdate({_id: build._id}, phaseMetadata, {new: true}).exec()
-                                    .then(() => Promise.resolve(pod));
-                    });
-        })
-        .then(pod => kubeClient.deletePod(pod));
-};
-
-const createAndStreamBuildPipeline = build => {
-    const branch = build.branch;
-    const repo = branch.repo;
-    const sha = build.commits.filter(c => c.isHead)[0].sha;
-    const basePodArgs = {buildId:build._id, repoSlug:repo.slug};
-    const gitPodArgs = Object.assign(basePodArgs, {cloneUrl:repo.cloneUrl, branch:branch.slug, sha:sha});
-    const testRunnerArgs = Object.assign(basePodArgs, {runCommand:repo.dockerRunCommand, envVars:repo.envVars});
-
-    // TODO - speed up build by doing deletes async afterwards
-    return _runPipelinePhase(GitSyncPodBuilder, gitPodArgs, 'gitSync', build)
-        .then(() => _runPipelinePhase(ImageSyncPodBuilder, basePodArgs, 'imageSync', build))
-        .then(() => _runPipelinePhase(TestRunnerPodBuilder, testRunnerArgs, 'testRunner', build));
-};
-
 router.route('/')
     .get((req, res) => {
-        Build.find({}).exec()
+        Build.find({}).sort('-createdAt').exec()
             .then(builds => res.json(builds))
             .error(err => res.status(500).send(err));
     });
@@ -71,7 +28,7 @@ router.route('/:id/schedule')
             .then(build => {
                 if (!build) res.status(404).send({});
 
-                createAndStreamBuildPipeline(build)
+                createBuildPipeline(build)
                     .then(data => res.json(data))
                     .catch(err => res.send(err))
                     .error(err => console.error('Pipeline error:', err));

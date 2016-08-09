@@ -1,4 +1,4 @@
-import ReposModule from './repos'
+import ReposModule from './repos';
 import ReposController from './repos.controller';
 import ReposComponent from './repos.component';
 import ReposTemplate from './repos.html';

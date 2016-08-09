@@ -1,22 +1,41 @@
 <navbar></navbar>
-<h1>New Repository</h1>
-<section>
-  <div class='error'>{{$ctrl.error}}</div>
+<h1 ng-show="!$ctrl.isUpdating">New Repository</h1>
+<h1 ng-show="$ctrl.isUpdating">Edit Repository</h1>
 
-  <div>
-    <form novalidate class="simple-form">
-      *GitHub Slug: <input type="text" ng-disabled="$ctrl.isUpdating" ng-model="$ctrl.repo.slug" /><br />
-      *Test Run Command: <input type="text" ng-model="$ctrl.repo.dockerRunCommand" /><br />
-      Build and Test Image Enviornment Varibles: <button ng-disabled="$ctrl.isSaving" ng-click="$ctrl.addBlankEnvVar()">+</button><br />
-      <ul>
-        <li ng-repeat="envVar in $ctrl.repo.envVars">
-          Key: <input type="text" ng-model="envVar.key"/> | Value: <input type="text" ng-model="envVar.value"/>
-          <button ng-disabled="$ctrl.isSaving" ng-show="$ctrl.repo.envVars.length > 1" ng-click="$ctrl.removeEnvVar(envVar)">Remove</button>
-        </li>
-      </ul>
+<div ng-show="$ctrl.error" class="alert alert-danger" role="alert">
+  <strong>Error!</strong> {{$ctrl.error}}
+</div>
+<div class="form-group">
+  &nbsp;
+</div>
 
-      <input type="submit" ng-show="!$ctrl.isUpdating" ng-disabled="$ctrl.isSaving" ng-click="$ctrl.save()" value="Save" />
-      <input type="submit" ng-show="$ctrl.isUpdating" ng-disabled="$ctrl.isSaving" ng-click="$ctrl.update()" value="Update" />
-    </form>
+<form novalidate>
+  <div class="form-group">
+    <label for="slug">*GitHub Slug</label>
+    <input type="text" class="form-control" id="slug" ng-model="$ctrl.repo.slug" placeholder="github-user/repo-name" />
   </div>
-</section>
+  <div class="form-group">
+    <label for="cmd">*Test Run Command</label>
+    <input type="text" class="form-control" id="cmd" ng-model="$ctrl.repo.dockerRunCommand" placeholder="/bin/sh ./runTests.sh" />
+  </div>
+  <div class="form-group">
+    <label for="vars">Test Image Enviornment Varibles</label>
+    <button class="btn btn-default btn-xs" ng-disabled="$ctrl.isSaving" ng-click="$ctrl.addBlankEnvVar()">+</button>
+    <ul>
+      <li ng-repeat="envVar in $ctrl.repo.envVars">
+        <div class="form-group">
+          <label for="k">Key</label>
+          <button class="btn btn-default btn-xs mr-05-pc" ng-disabled="$ctrl.isSaving" ng-show="$ctrl.repo.envVars.length > 1" ng-click="$ctrl.removeEnvVar(envVar)">Remove</button>
+          <input type="text" id="k" class="form-control" ng-model="envVar.key"/>
+        </div>
+        <div class="form-group">
+          <label for="v">Value</label>
+          <input type="text" id="v" class="form-control" ng-model="envVar.value"/>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <input type="submit" class="btn btn-default" ng-show="!$ctrl.isUpdating" ng-disabled="$ctrl.isSaving || $ctrl.error" ng-click="$ctrl.save()" value="Save" />
+  <input type="submit" class="btn btn-default" ng-show="$ctrl.isUpdating" ng-disabled="$ctrl.isSaving || $ctrl.error" ng-click="$ctrl.update()" value="Update" />
+</form>

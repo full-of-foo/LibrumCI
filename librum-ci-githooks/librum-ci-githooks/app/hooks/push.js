@@ -11,11 +11,11 @@ const _extractRepoData = payload => {
         cloneUrl: payload.repository.clone_url
     };
 };
-const _extractBuildData = payload => {
-    return {
-        state: 'Queued',
-        compareUrl: payload.compare,
-        commits: payload.commits.map(c => {
+
+const _extratCommitData = payload => {
+    let commits = [];
+    if (payload.commits.length) {
+        commits = commits.concat(payload.commits.map(c => {
             return {
                 sha: c.id,
                 commitedAt: c.timestamp,
@@ -24,7 +24,25 @@ const _extractBuildData = payload => {
                 url: c.url,
                 isHead: c.id === payload.head_commit.id
             };
-        })
+        }));
+    } else {
+        commits.push({
+            sha: payload.head_commit.id,
+            commitedAt: payload.head_commit.timestamp,
+            authorName: payload.head_commit.author.username,
+            authorEmail: payload.head_commit.author.email,
+            url: payload.head_commit.url,
+            isHead: true
+        });
+    }
+    return commits;
+};
+
+const _extractBuildData = payload => {
+    return {
+        state: 'Queued',
+        compareUrl: payload.compare,
+        commits: _extratCommitData(payload)
     };
 };
 

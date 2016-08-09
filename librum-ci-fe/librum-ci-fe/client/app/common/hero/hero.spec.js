@@ -1,4 +1,4 @@
-import HeroModule from './hero'
+import HeroModule from './hero';
 import HeroController from './hero.controller';
 import HeroComponent from './hero.component';
 import HeroTemplate from './hero.html';
@@ -16,7 +16,7 @@ describe('Hero', () => {
 
     describe('Controller', () => {
         it('has a name property', () => {
-            let controller = makeController();
+            const controller = makeController();
             expect(controller).to.have.property('name');
         });
     });
@@ -28,7 +28,7 @@ describe('Hero', () => {
     });
 
     describe('Component', () => {
-        let component = HeroComponent;
+        const component = HeroComponent;
 
         it('includes the intended template',() => {
             expect(component.template).to.equal(HeroTemplate);

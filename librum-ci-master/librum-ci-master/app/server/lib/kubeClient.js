@@ -3,6 +3,7 @@ import Client from 'node-kubernetes-client';
 import request from 'request';
 import JSONStream from 'JSONStream';
 import config from '../../../config';
+import {PodStreamError} from './exc';
 
 const FAILED_POD_STATES = ['Failed', 'Unknown'];
 const podsUrl = `https://${config.kubeMasterUri}/api/v1/namespaces/librum-ci/pods`;
@@ -30,17 +31,16 @@ Client.prototype.streamPodUntilPhase = function(pod, desiredPhase = 'Succeeded')
                 if (currentState === desiredPhase) {
                     console.log(`${currentState}: destroying stream with '${nameLabel}'`);
                     this.destroy();
-                    resolve(pod);
                 }
                 if (desiredPhase === 'Succeeded' && FAILED_POD_STATES.indexOf(currentState) > -1) {
                     console.log(`${currentState}: destroying stream with '${nameLabel}'`);
+                    this.error = new PodStreamError(currentState, pod);
                     this.destroy();
-                    reject(pod);
                 }
-
-                // TODO - assert container not in 'State: Waiting, Reason: RunContainerError'
             })
-            .on('end', () => resolve(pod)); // TODO - remove?
+            .on('close', function() {
+                this.error ? reject(this.error) : resolve(pod);
+            });
     });
 };
 

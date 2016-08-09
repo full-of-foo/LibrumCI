@@ -5,6 +5,8 @@ import Common from './common/common';
 import Components from './components/components';
 import AppComponent from './app.component';
 import services from './services/services';
+import Bootstrap from 'bootstrap/dist/css/bootstrap.css';
+import BootstrapTheme from 'bootstrap/dist/css/bootstrap-theme.css';
 
 angular.module('app', [
     uiRouter,

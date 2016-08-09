@@ -14,7 +14,6 @@ describe('About', () => {
     }));
 
     describe('Module', () => {
-        // top-level specs: i.e., routes, injection, naming
         it('About component should be visible when navigates to /about', () => {
             $location.url('/about');
             $rootScope.$digest();
@@ -23,7 +22,6 @@ describe('About', () => {
     });
 
     describe('Controller', () => {
-        // controller specs
         let controller;
         beforeEach(() => {
             controller = $componentController('about', {
@@ -31,13 +29,12 @@ describe('About', () => {
             });
         });
 
-        it('has a name property', () => { // erase if removing this.name from the controller
+        it('has a name property', () => {
             expect(controller).to.have.property('name');
         });
     });
 
     describe('View', () => {
-        // view layer specs.
         let scope, template;
 
         beforeEach(() => {
