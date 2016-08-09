@@ -35,8 +35,8 @@ describe('Navbar', () => {
             scope.$apply();
         });
 
-        it('has name in template', () => {
-            expect(template.find('h1').find('a').html()).to.eq('Librum CI');
+        it('has app title in template', () => {
+            expect(template.find('a').html()).to.eq('Librum CI');
         });
 
     });

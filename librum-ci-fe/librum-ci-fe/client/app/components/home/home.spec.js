@@ -43,8 +43,8 @@ describe('Home', () => {
             scope.$apply();
         });
 
-        it('has name in template', () => {
-            expect(template.find('h1').html()).to.eq('Copyright Stuff');
+        it('has hero in template', () => {
+            expect(template.find('hero').html()).to.eq('');
         });
 
     });

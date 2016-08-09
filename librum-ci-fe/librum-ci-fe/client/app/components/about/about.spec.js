@@ -43,8 +43,8 @@ describe('About', () => {
             scope.$apply();
         });
 
-        it('has name in template', () => {
-            expect(template.find('h1').html()).to.eq('about');
+        it('has About Us in template', () => {
+            expect(template.find('h1').html()).to.eq('About Us');
         });
 
     });

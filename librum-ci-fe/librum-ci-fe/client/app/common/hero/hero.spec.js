@@ -22,8 +22,8 @@ describe('Hero', () => {
     });
 
     describe('Template', () => {
-        it('has welcome in template', () => {
-            expect(HeroTemplate).to.contain('This is the Liberum CI frontend');
+        it('has text in template', () => {
+            expect(HeroTemplate).to.contain('Your webhook listener URL is');
         });
     });
 

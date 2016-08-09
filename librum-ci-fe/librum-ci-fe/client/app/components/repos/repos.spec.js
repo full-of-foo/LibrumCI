@@ -14,16 +14,9 @@ describe('Repos', () => {
         };
     }));
 
-    describe('Controller', () => {
-        it('has a name property', () => {
-            const controller = makeController();
-            expect(controller).to.have.property('name');
-        });
-    });
-
     describe('Template', () => {
-        it('has name in template', () => {
-            expect(ReposTemplate).to.match(/{{\s?\$ctrl\.name\s?}}/g);
+        it('has Repositories in template', () => {
+            expect(ReposTemplate).to.contain('Repositories');
         });
     });
 

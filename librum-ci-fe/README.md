@@ -1,6 +1,20 @@
 LibrumCI Frontend
 =============
 
+Usage
+
+This service depends upon running librum-ci-master, librum-ci-githooks and mongo instances. All of which
+must be ran and orchestrated together (see more [here](./../README.md)).
+
+Testing
+
+As the frontend functional tests depend upon a web browser they cannot be easily containerised. Test dependencies must be fist installed on one's host machine.
+````
+cd librum-ci-fe \
+  && npm install \
+  && npm test
+````
+
 ## File Structure
 A componentized approach is used, this will be the eventual standard (and particularly helpful, if using Angular's new router) as well as a great way to ensure a tasteful transition to Angular 2, when the time is ripe. Everything--or mostly everything, as we'll explore (below)--is a component. A component is a self-contained concern--may it be a feature or strictly-defined, ever-present element of the UI (such as a header, sidebar, or footer). Also characteristic of a component is that it harnesses its own stylesheets, templates, controllers, routes, services, and specs. This encapsulation allows us the comfort of isolation and structural locality. Here's how it looks:
 ```
@@ -20,11 +34,6 @@ client
 ⋅⋅⋅⋅⋅⋅⋅⋅home.spec.js * home specs (for entry, component, and controller)
 ```
 
-# Getting Started
-
-## Running the App
-Gulp is used to build and launch the development environment. After you have installed all dependencies, you may run the app. Running `gulp` will bundle the app with `webpack`, launch a development server, and watch all files. The port will be displayed in the terminal.
-
 ### Gulp Tasks
 Here's a list of available tasks:
 * `webpack`
@@ -37,14 +46,6 @@ Here's a list of available tasks:
 	* runs `serve`.
 * `component`
   * scaffolds a new Angular component. [Read below](#generating-components) for usage details.
-
-### Testing
-To run the tests, run `npm test` or `karma start`.
-
-`Karma` combined with Webpack runs all files matching `*.spec.js` inside the `app` folder. This allows us to keep test files local to the component--which keeps us in good faith with continuing to build our app modularly. The file `spec.bundle.js` is the bundle file for **all** our spec files that Karma will run.
-
-Be sure to define your `*.spec.js` files within their corresponding component directory. You must name the spec file like so, `[name].spec.js`. If you don't want to use the `.spec.js` suffix, you must change the `regex` in `spec.bundle.js` to look for whatever file(s) you want.
-`Mocha` is the testing suite and `Chai` is the assertion library. If you would like to change this, see `karma.conf.js`.
 
 ### Generating Components
 Following a consistent directory structure between components offers us the certainty of predictability. We can take advantage of this certainty by creating a gulp task to automate the "instantiation" of our components. The component boilerplate task generates this:
@@ -60,13 +61,3 @@ Following a consistent directory structure between components offers us the cert
 
 You may, of course, create these files manually, every time a new module is needed, but that gets quickly tedious.
 To generate a component, run `gulp component --name componentName`.
-
-The parameter following the `--name` flag is the name of the component to be created. Ensure that it is unique or it will overwrite the preexisting identically-named component.
-
-The component will be created, by default, inside `client/app/components`. To change this, apply the `--parent` flag, followed by a path relative to `client/app/components/`.
-
-For example, running `gulp component --name signup --parent auth` will create a `signup` component at `client/app/components/auth/signup`.  
-
-Running `gulp component --name footer --parent ../common` creates a `footer` component at `client/app/common/footer`.  
-
-Because the argument to `--name` applies to the folder name **and** the actual component name, make sure to camelcase the component names.
