@@ -14,7 +14,7 @@ if [ -z "$SERVICE_NAME" ]; then
   echo "SERVICE_NAME not set."
   exit 1
 fi
-if [[ $SERVICE_NAME != fe && $SERVICE_NAME != master && $SERVICE_NAME && githooks ]] ; then
+if [[ $SERVICE_NAME != fe && $SERVICE_NAME != master && $SERVICE_NAME != githooks ]] ; then
   echo "Invalid SERVICE_NAME ('$SERVICE_NAME')."
   exit 1
 fi
