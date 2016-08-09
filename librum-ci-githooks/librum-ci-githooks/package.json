@@ -1,8 +1,6 @@
 {
-  "name": "librum-ci-master",
+  "name": "librum-ci-githooks",
   "version": "0.0.1",
-  "description": "TODO",
-  "private": true,
   "dependencies": {
     "babel-cli": "6.9.0",
     "babel-core": "6.9.0",

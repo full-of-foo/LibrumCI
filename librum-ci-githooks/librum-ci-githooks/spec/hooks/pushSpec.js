@@ -2,6 +2,7 @@ import {onPush} from '../../app/hooks/push';
 import {Repo, Branch, Build} from 'librum-ci-models';
 
 const mockPushData = require('../support/fixtures/push.json');
+const mockRepoData = {slug: 'full-of-foo/sample-libreci-app', dockerRunCommand: 'true'};
 
 describe('Hooks: pushSpec', () => {
     it('should return a promise', done => {
@@ -10,21 +11,35 @@ describe('Hooks: pushSpec', () => {
                .then(done);
     });
 
-    it('should create a new repo, branch and build', done => {
+    it('should not schedule a build for a non-existing repo', done => {
         onPush(mockPushData)
             .then(() => {
                 Repo.count({}, (err, count) => {
-                    console.log('Repo', count);
-                    expect(count).toBeGreaterThan(0);
-                    Branch.count({}, (err2, count2) => {
-                        console.log('Branch', count2);
-                        Build.count({}, (err3, count3) => {
-                            console.log('Build', count3);
-                            expect(count3).toBeGreaterThan(0);
-                            done();
-                        });
-                    });
+                    expect(count).toBe(0);
+                    done();
                 });
             });
     });
+
+    it('should schedule a build for an existing repo', done => {
+        Repo.create(mockRepoData)
+            .then(() => {
+                return onPush(mockPushData)
+                    .then(() => Repo.count({}).exec().then(count => expect(count).toBe(1)))
+                    .then(() => Branch.count({}).exec().then(count => expect(count).toBe(1)))
+                    .then(() => Build.count({}).exec().then(count => expect(count).toBe(1)));
+            }).then(() => done());
+    });
+
+    it('should upsert branches and create a build for subsequent pushes', done => {
+        Repo.create(mockRepoData)
+            .then(() => {
+                return onPush(mockPushData)
+                    .then(() => onPush(mockPushData))
+                    .then(() => Repo.count({}).exec().then(count => expect(count).toBe(1)))
+                    .then(() => Branch.count({}).exec().then(count => expect(count).toBe(1)))
+                    .then(() => Build.count({}).exec().then(count => expect(count).toBe(2)));
+            }).then(() => done());
+    });
+
 });
