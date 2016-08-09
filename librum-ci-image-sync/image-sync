@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# Synchronises the image ($FULL_BUILD_NAME) for a given repoistory ($REPO_DIR)
+# by building it and then deploying the built image/artefact to a remote
+# registry/repoistory ($DOCKER_HUB_USER).
+
 set -x
 
 # Assert connected to Docker daemon
@@ -20,7 +25,7 @@ if [ -z "$DOCKER_HUB_PASS" ]; then
   echo "DOCKER_HUB_PASS not set."
   exit 1
 fi
-if [ -z "$$FULL_BUILD_NAME" ]; then
+if [ -z "$FULL_BUILD_NAME" ]; then
   echo "$FULL_BUILD_NAME not set."
   exit 1
 fi
