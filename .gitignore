@@ -47,6 +47,3 @@ report/report.blg
 report/report.log
 report/report.out
 report/report.synctex.gz
-
-# Helper scripts
-deploy_*.sh

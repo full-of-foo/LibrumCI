@@ -1,3 +1,4 @@
+# Docker-compose definition for orchestrating all long-running LibrumCI serivces.
 librum-ci-fe:
   build: ./librum-ci-fe
   environment:

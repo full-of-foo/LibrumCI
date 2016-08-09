@@ -26,7 +26,7 @@ if [ -z "$DOCKER_HUB_PASS" ]; then
   exit 1
 fi
 if [ -z "$FULL_BUILD_NAME" ]; then
-  echo "$FULL_BUILD_NAME not set."
+  echo "FULL_BUILD_NAME not set."
   exit 1
 fi
 
