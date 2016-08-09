@@ -1,4 +1,4 @@
-Librum CI Frontend
+LibrumCI Frontend
 =============
 
 ## File Structure

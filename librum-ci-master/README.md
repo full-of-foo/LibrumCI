@@ -1,8 +1,8 @@
-Librum CI Master
+LibrumCI Master
 ==========
 
-Service Development
+Development
 ````
-docker build -t ${USER}/librum-ci-master:${TAG} .
-docker push ${USER}/librum-ci-master
+docker build -t {USER}/librum-ci-master:{TAG} .
+docker push {USER}/librum-ci-master
 ````

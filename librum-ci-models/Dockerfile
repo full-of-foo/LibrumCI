@@ -1,4 +1,5 @@
 FROM toeknee/librum-ci-xenial-node:0.02
+LABEL Description="Development image (test execution and package publishing) for the LibrumCI models package"
 
 ##### App
 COPY librum-ci-models/package.json /tmp/package.json

@@ -1,3 +1,4 @@
+import Promise from 'bluebird';
 import mongoose from './../../src/utils/mongoose';
 import {addHelperFns} from '../../lib/models/base';
 
@@ -8,7 +9,6 @@ const MockModel = mongoose.model('Mock', MockSchema);
 describe('BaseSchema: MockModel', () => {
     it('should be able to getById', done => {
         const mockId = new mongoose.Types.ObjectId();
-
         new MockModel({_id: mockId}).save((err, mock) => {
             const promise = MockModel.getById(mockId);
             expect(promise.constructor).toBe(Promise);
@@ -21,7 +21,6 @@ describe('BaseSchema: MockModel', () => {
 
     it('should be able to update', done => {
         const mockId = new mongoose.Types.ObjectId();
-
         new MockModel({_id: mockId}).save((err, mock) => {
             const promise = MockModel.findAndUpdate(mockId, {foo: 'bar'});
             expect(promise.constructor).toBe(Promise);
@@ -43,13 +42,4 @@ describe('BaseSchema: MockModel', () => {
                     .then(done);
             });
     });
-
-    it('should be warpped with Bluebird promises', done => {
-        const promise = MockModel.findOne({foo: 'bar'}).exec();
-        expect(promise.constructor)
-            .toBe(Promise);
-
-        promise.then(done);
-    });
-
 });

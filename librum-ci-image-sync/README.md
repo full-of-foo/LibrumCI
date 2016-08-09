@@ -1,7 +1,5 @@
-Librum CI Image Sync
+LibrumCI Image Sync
 ==========
-
-TODO - update required env params
 
 Usage
 ```

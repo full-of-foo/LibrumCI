@@ -1,3 +1,5 @@
+# Docker Compose definition for running isolated
+# LibrumCI model tests.
 librum-ci-models:
   build: .
   environment:

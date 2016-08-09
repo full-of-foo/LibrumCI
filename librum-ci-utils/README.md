@@ -1,4 +1,4 @@
-Librum CI Utils
+LibrumCI Utils
 ======
 
 
