@@ -1,4 +1,9 @@
 /*
+The Copyright for this forked software remains "AS IS".
+ - Source modification: https://github.com/full-of-foo/LibrumCI/commit/fc04563d1bb6e700ae03bfb0cc545dac6c947c26#diff-147c5a53fb447b68b36b1b356b366f99
+ - Forked from: https://github.com/kubernetes/contrib/tree/master/git-sync
+*/
+/*
 Copyright 2014 The Kubernetes Authors All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +21,7 @@ limitations under the License.
 
 // git-sync is a command that pull a git repository to a local directory.
 
-package main // import "k8s.io/contrib/git-sync"
+package main
 
 import (
 	"bytes"

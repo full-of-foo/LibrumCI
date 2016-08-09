@@ -1,5 +1,5 @@
 {
-	"ImportPath": "k8s.io/contrib/git-sync",
+	"ImportPath": ".",
 	"GoVersion": "go1.5",
 	"GodepVersion": "v74",
 	"Packages": [

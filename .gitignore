@@ -38,7 +38,7 @@ jspm_packages
 .node_repl_history
 
 # Binaries
-librum-ci-git-sync/src/k8s.io/contrib/git-sync/git-sync
+librum-ci-git-sync/git-sync
 
 # LateX
 report/report.aux

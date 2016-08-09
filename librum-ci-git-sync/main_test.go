@@ -1,4 +1,9 @@
 /*
+The Copyright for this forked software remains "AS IS".
+ - Source modification: none
+ - Forked from: https://github.com/kubernetes/contrib/tree/master/git-sync
+*/
+/*
 Copyright 2015 The Kubernetes Authors All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
