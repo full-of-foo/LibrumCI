@@ -2,6 +2,9 @@
 
 \usepackage{natbib} % Harvard style bib
 \usepackage{lipsum}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{minted}
 
 \begin{document}
 
@@ -27,25 +30,6 @@ Anthony Troy\\
 
 \keywords{Continuous Integration; Kubernetes; Continuous Delivery; Docker; Cluster Management Frameworks; VCS; Agile}
 
-% \footnote{Two of these, the {\texttt{\char'134 numberofauthors}}
-% and {\texttt{\char'134 alignauthor}} commands, you have
-% already used; another, {\texttt{\char'134 balancecolumns}}, will
-% be used in your very last run of \LaTeX\ to ensure
-%balanced column heights on the last page.}
-
-
-%\begin{table}
-%\centering
-%\caption{Frequency of Special Characters}
-%\begin{tabular}{|c|c|l|} \hline
-%Non-English or Math&Frequency&Comments\\ \hline
-%\O & 1 in 1,000& For Swedish names\\ \hline
-%$\pi$ & 1 in 5& Common in math\\ \hline
-%\$ & 4 in 5 & Used in business\\ \hline
-%$\Psi^2_1$ & 1 in 40,000& Unexplained usage\\
-%\hline\end{tabular}
-%\end{table}
-
 \section{Introduction}
 With organisational structures diversifying to off-shore, insource and outsource
 development needs, software is increasingly being developed by fully- or 
@@ -54,153 +38,8 @@ under a test infrastructure that is automated and robust enough to allow for
 high levels of code churn. This development requirement is reflected in 
 in the sustained and growing adoption of Continuous Integration (CI) practices in open-source and enterprise software projects \citep{Duvall, Fitz, Vas}. 
 \par
-Todo, mention the requirements and then pitfalls/challenges of CI (expense of provisioning prod-like envs, configuration management, slow feedback). Todo, mention the advent of containerisation and container cluster management frameworks. Todo, mention the lacking CI open-source tooling support for containers. Todo, define container cluster management frameworks and mention how they can remedy CI challenges, CI container support and more. 
+To-do, mention the requirements and then pitfalls/challenges of CI (expense of provisioning prod-like envs, configuration management, slow feedback). To-do, mention the advent of containerisation and container cluster management frameworks. To-do, mention the lacking CI open-source tooling support for containers. To-do, define container cluster management frameworks and mention how they can remedy CI challenges, CI container support and more. 
 
-\section{Related Work}
-\lipsum[1] 
-
-
-\section{Background}
-Traditionally most software projects have been characterised as having
-poor integration practices. More often than often not a siloed team 
-will conduct all development activities, arguably over a lengthy period,
-and defer acceptance testing and code integration. Importantly, during
-this period one can assert that the software is in an inoperative state, as there has
-been no motivation to actually run the software and use it in a
-production-like environment.
-\par 
-\citet{Jez} argue that many projects ``schedule lengthy integration phases at
-the end of development to allow the development team time to get the branches
-merged and the application working so it can be acceptance-tested". More concerning
-is that when some projects arrive at this point ``their software is not fit for
-purpose". These long-winded and challenging phases, commonly referred
-to as ``integration hell", pose difficulties for the engineers working through the integration
-and too for the leads and managers estimating the project delivery.
-\par
-Applications of Continuous Integration (CI) practices have been found to effectively 
-remove these phases at source \citep{Vas, Fitz, Jez, Duvall}. As a practice, CI seeks to reduce software deployment lead time by
-facilitating frequent code churn through verifying contributions with automated 
-builds and tests. Depending on the structure of the team and software, \citet{Jez} 
-advise that a team member should integrate their work at least once daily. An effective 
-undertaking of this process means that the software is always in a working state
-\par
-Todo, highlight of challenges applying CI (provisioning build farms with things like Puppet, compute expense, configuration management, maintaining production parody). 
-Todo, highlight the advent of containerisation (effective smart building, prod build and config parody can be more easily achieved).
-Todo, briefly discuss how distributed container technology works (distributed caching of layers and images across nodes)
-Todo, discuss production-grade container scheduling and management frameworks vs traditionally build farm technology (Kuberentes vs Jenkins).
-
-\subsection{Continuous Integration}
-Practices resembling Continuous Integration could be said
-to stem as far back as the original lean manufacturing method. 
-Nevertheless in software
-engineering the practice was codified by \citet{Beck} 
-as a core tenant of the Extreme Programming (XP) method.
-Following, CI was also included in the Agile Manifesto as an encouraged
-quality assurance practice. Amidst its wide adoption and popularity however, 
-there is some variability in how teams are employing the practice, resulting 
-is some debate as to exactly which integration activities one should follow \citep{Stahl}.
-\par
-Nevertheless, the practice forwards several core principles and high-level activities.
-Todo, mention these practices (use version control, daily committing to mainline, etc)
-Todo, detail the challenges 
-\par
-
-
-% However, at heart, continuous integration may be de-
-%fined as a process which is typically automatically triggered
-%and comprises inter-connected steps such as compiling code,
-%running unit and acceptance tests, validating code coverage,
-%checking compliance with coding standards, and building
-%deployment packages. While some form of automation is
-%typical, the frequency of integration is also important in that
-%it should be regular enough to ensure quick feedback to developers.
-%Finally, continuous integration failures are important
-%events which may have a number of ceremonies and highly
-%visible artifacts to help ensure that problems leading to these
-%failures are prioritized for solution as quickly as possible by
-%whoever is deemed responsible.
-%Continuous integration has increased in importance due to
-%the benefits that have been associated with it [57]. These benefits
-%include improved release frequency and predictability,
-%increased developer productivity, and improved communication.
-%Continuous integration requires a link between development
-%and operations and is thus very relevant to the DevOps
-%phenomenon [16]. Within continuous integration, a number
-%of further modes of continuous activities can be identified,
-%namely continuous deployment and continuous delivery [28,
-%35]. These concepts are related in that continuous deployment
-%is a prerequisite for continuous delivery, but the reverse is not
-%necessarily the case. That is, continuous delivery refers to releasing
-%valid software builds to users automatically, whereas
-%continuous deployment refers to the practice of deploying
-%the software to some environment, but not automatically
-%delivering to customers.
-%Continuous delivery has been defined as the ability to release software whenever an organization wants [45]. In
-%actual practice, this means that new features are deployed
-%into production code as soon as they are finished. This ability
-%and practice to release frequently has long been recognized
-%in open source software communities, where ?release early,
-%release often? is a common practice.
-%Neely and Stolt [45] describe the experience of an organization
-%that adopted continuous delivery. The organization implemented
-%a number of lean principles, such as implementing
-%a Kanban system (migrating from Scrum), documenting their
-%development process (value stream mapping), and automation
-%whenever possible. The transformation of continuous
-%delivery cannot be limited to the software development team,
-%but should also consider other functions, in particular Sales
-%and Marketing. This suggests that an end-to-end consideration
-%of the software development lifecycle is important, which
-%is also a characteristic of Lean Thinking. Neely and Stolt also
-%reported that continuous monitoring (through tests, gates
-%and checks) is important ? in lean vocabulary this is better
-%known as Poka Yoke ? and the organization used a number
-%of tools to monitor the state of the system.
-%By changing from time-based releases (e.g., Sprint-based)
-%to continuous delivery of software, the number of reported
-%defects (e.g. by customers) is likely to level out?the leveling
-%of a workload (i.e., the need to fix defects) is referred to as
-%?heijunka? in Lean Thinking [63]. (Continuous Software Engineering)
-%
-%
-%
-%
-%In continuous integration, a software project is
-%hosted on a controlled version repository (e.g., SVN or Git) and, at
-%each commit, the project is built and the regression test suites are
-%run to verify that the new added code does not break anything in
-%the application
-%
-%. Continuous integration is typically run on powerful
-%servers, and can often resort to build farms or cloud-based infrastructure
-%to speed up the build process for large projects. (CTG)
-%
-% One of the main objectives
-%of continuous integration is to reduce the problems of ?integration
-%hell?, i.e., different engineers working on the same code base at
-%the same time, such that their changes have to be merged together.
-%One approach to deal with such problems is to use controlled version
-%repositories (e.g., SVN or Git) and to commit changes on a
-%daily basis, instead of waiting days or weeks. At each new code
-%commit, a remote server system can build the application automatically
-%to see if there are any code conflicts. Furthermore, at each
-%new build, the available regression test suites can be run to see if
-%any new features or bug fixes break existing functionality; developers
-%responsible for new failures can be automatically notified.
-%Continuous integration is widely adopted in industry, and several
-%different systems are available for practitioners. The most popular
-%ones include the open source projects Jenkins, CruiseControl, Apache Continuum, Oracle?s Hudson
-%and Bamboo from Atlassian. The functionalities of those continuous integration systems
-%can typically be extended with plugins. For example, at the time
-%of writing this paper, Jenkins had more than 600 plugins, including
-%plugins that measure and visualise code coverage of tests.
-%Besides running regression test suites on dedicated continuous
-%integration servers, these suites could also be automatically run
-%in the background on the development machines by the IDE (e.g.,
-%Eclipse). The idea would be to provide feedback to the developers
-%as soon as possible, while they are still editing code. Some authors
-%call this approach continuous testing [27, 28]. (CTG)
-%
 %One key innovation
 %is the idea of continuous integration (CI); essentially, CI attempts
 %to automatically build and deploy the software in a
@@ -232,159 +71,237 @@ Todo, detail the challenges
 %that user-experienced quality is not negatively affected.
 %We did see an increase in developer reported
 %bugs, which suggests that CI is helping developers discover
-%more defects(github)
-%
-%The concept of CI is often attributed to Martin Fowler
-%based on a 2000 blog entry [12]. The basic notion is that
-%all developers? work within a team is continually compiled,
-%built, and tested. This process is a perpetual check on
-%the quality of contributed code, and mitigates the risk of
-%?breaking the build?, or worse, because of major, incompatible
-%changes by different people or different sub-teams.
-%Arguably, CI originated from the imperatives of agility [11],
-%viz., responding quickly to customer requirements. It can
-%be viewed as a type of process automation; rather than wait
-%for some sort of human-controlled gate-keeping of code prior
-%to building and integration testing, automated mechanisms
-%are incorporated into the development environment to carry
-%out these steps continually and automatically. In software
-%engineering, continuous integration is viewed as a paradigm
-%shift, ?perhaps as important as using version control? [22].
-%Without CI, software is considered broken until proven to
-%work, typically during a testing or integration stage. With
-%CI, assuming a comprehensive automated test suite, software
-%is proven to work with every new change, and serious
-%regressions can be detected and fixed immediately.
-%In the context of distributed, globalized development, cultural,
-%geographical and time di?erences raise the spectre of
-%process variation and non-repeatability, and thus amplify
-%the imperatives to adopt process automation. This applies
-%even more strongly to open source software (OSS) projects
-%where, in addition to the above issues, volunteers are involved,
-%and there is also a lack of centralized control [10,
-%20, 21]. CI has become quite popular in OSS projects, and
-%many projects in GitHub are using it [19]. Numerous tools
-%that support CI exist [29]. Therefore, one might expect that
-%these teams are seeing benefits from adopting CI, and that
-%one could obtain quantitative evidence of these benefits. (Github).
-%
-%The high profile of Agile and eXtreme programming has
-%popularized the concepts of Test-Driven Development [3]
-%and Continuous Integration [10, 8]. These practices have
-%been used to deliver functionality in the early phases of the
-%Software Engineering process. Both concepts work towards
-%?Web 2.0? design goals associated to the perpetual beta design
-%pattern [25], by leading developers into an iterative process
-%life-cycle based on feedback and re-design phases. In
-%order to guarantee the stability of the evolving design and
-%inclusion of new features, an automatic build is executed to
-%identify errors in the software as quickly as possible. The
-%execution of the automatic build characterizes Continuous
-%Integration processes, in which developers are lead to integrate
-%their work frequently, which implies in multiple integrations
-%activities been done in a single day [10].
-%The automatic test build can be composed by unit-tests,
-%integration tests, acceptance tests, among others [2]. For
-%?Web 2.0? applications, the test results impact directly in
-%the decision of whether a software should be deployed or
-%not. If a report identifies errors the application is classified
-%as unstable and the deployment is delayed until the build
-%is fixed. If a report identifies no errors then a production
-%deployment can be executed for delivering new functionalities
-%to users. It is worth noticing, that these development
-%scenarios rely solely in automatic tests strategies, since one
-%iteration of this process can take less than one hour [20]. (RIA)
-%
-%Continuous integration plays a crucial role to the
-%success of iterative and incremental software
-%development both in serving as an information
-%radiator for the team to keep track of the current
-%state of development and in guaranteeing that
-%working software can be delivered at the end of an
-%iteration/increment. As such, continuous
-%integration needs to be made a sustainable practice
-%in incremental and iterative software development. (Cross-plat)
-%
-%Continuous Integration [17] recommends an integration
-%build after every check-in, so that integration problems are
-%detected and resolved sooner. Unfortunately, integration
-%builds do not prevent broken code from entering the codeline,
-%but only report that occurrence. Developers may then
-%update their workspaces with such code, unless they are told
-%not to update until a subsequent check-in passes the build,
-%but this delays progress in the codeline. (real-time)
-%
-%In continuous integration development environments, software engineers
-%frequently integrate new or changed code with the mainline
-%codebase. This can reduce the amount of code rework that is
-%needed as systems evolve and speed up development time. While
-%continuous integration processes traditionally require that extensive
-%testing be performed following the actual submission of code to
-%the codebase, it is also important to ensure that enough testing is
-%performed prior to code submission to avoid breaking builds and
-%delaying the fast feedback that makes continuous integration desirable.
-%In continuous integration development environments, engineers
-%merge code that is under development or maintenance with the
-%mainline codebase at frequent time intervals [8, 13]. Merged code
-%is then regression tested to help ensure that the codebase remains
-%stable and that continuing engineering efforts can be performed
-%more reliably. This approach is advantageous because it can reduce
-%the amount of code rework that is needed in later phases of
-%development, and speed up overall development time. As a result,
-%increasingly, organizations that create software are using continuous
-%integration processes to improve their product development,
-%and tools for supporting these processes are increasingly common (Techniques for Improving Regression Testing).
-%
-%There are several challenges inherent in supporting continuous
-%integration development environments. Developers must conform
-%to the expectation that they will commit changes frequently, typically
-%at a minimum of once per day, but usually more often. Version
-%control systems must support atomic commits, in which sets of related
-%changes are treated as a single commit operation, to prevent
-%builds from being attempted on partial commits. Testing must be
-%automated and test infrastructure must be robust enough to continue
-%to function in the presence of significant levels of code churn (Techniques for Improving Regression Testing).
-%
-%Continuous integration environments automatically execute
-%integration and system tests on remote computing resources,
-%and move the burden of test execution away from developers
-%machines. Remote resources are shared among all the developers
-%and might easily become a bottleneck when the number
-%of developers increases, thus limiting the effectiveness of the
-%continuous integration environments.
-%Some address this problem by defining techniques that
-%filter and prioritize the tests scheduled for execution such
-%that developers could get interesting results within acceptable
-%time also in the presence of resource shortage [1]. Others
-%instead leverage cloud platforms to access increasingly large
-%and elastic pools of computing resources to reduce the risk of
-%incurring in bottlenecks [2].
-%Current solutions mostly focus on improving the efficiency
-%of cloud-based continuous integration by automating repetitive
-%activities to setup and execute integration and system tests [3],
-%which account for the coordinated deployment of several
-%virtual machine instances and their configuration by installing
-%software components, restoring system state, and configuring
-%test drivers. As an example, system testing of a two-tiered
-%Web service requires at least the deployment of two virtual
-%machines, the installation of the application server code and
-%the business logic on the ?front-end? server, and the installation
-%of the database server and its content in the ?back-end? server.
-%This setup process repeats for all the instances that are
-%started by the tests; therefore, automated solutions have the
-%potential of speeding up the overall test execution. However,
-%blind automation in the cloud might result in surprisingly
-%high costs and long execution times that can easily overpass
-%the potential benefits of automation and jeopardize the use
-%of cloud-based continuous integration environments. In fact,
-%cloud providers charge the usage of any resource, including
-%network communications, and the set up of virtual machines
-%might involve the download of large amount of data and the
-%re-installation of software components whose costs accumulate
-%over test executions.(Poster)
+
+%CI can enable you to release deployable software at any point in time.
+%From an outside perspective, this is the most obvious benefit of CI. We
+%could talk endlessly about improved software quality and reduced
+%risks, but deployable software is the most tangible asset to ?outsiders?
+%such as clients or users. The importance of this point cannot be overstated.
+%CI provides the ability to notice trends and make effective decisions,
+%and it helps provide the courage to innovate new improvements.
+%Overall, effective application of CI practices can provide greater confidence
+%in producing a software product. With every build, your team
+%knows that tests are run against the software to verify behavior, that
+%project coding and design standards are met, and that the result is a
+%functionally testable product. (CI book)
+
+\section{Related Work}
+\lipsum[1] 
+
+
+\section{Background}
+Traditionally most software projects have been characterised as having
+poor integration practices. More often than often not a siloed team 
+will conduct all development activities, arguably over a lengthy period,
+and defer acceptance testing and code integration. Importantly, during
+this period one can assert that the software is in an inoperative state, as there has
+been no motivation to actually run the software and use it in a
+production-like environment.
+\par 
+\citet{Jez} argue that many projects ``schedule lengthy integration phases at
+the end of development to allow the development team time to get the branches
+merged and the application working so it can be acceptance-tested". More concerning
+is that when some projects arrive at this point ``their software is not fit for
+purpose". These long-winded and challenging phases, commonly referred
+to as ``integration hell", pose difficulties for the engineers working through the integration
+and too for the leads and managers estimating the project delivery.
+\par
+Applications of Continuous Integration practices have been found to effectively 
+remove these phases at source \citep{Vas, Fitz, Jez, Duvall}. As a practice, CI seeks to reduce software deployment lead time by
+facilitating frequent code churn through verifying contributions with automated 
+builds and tests. Depending on the structure of the team and software, \citet{Jez} 
+advise that a team member should integrate their work at least once daily. An effective 
+undertaking of this process means that the software is always in a working state. 
+\par
+To-do, highlight of challenges applying CI (provisioning build farms with things like Puppet, compute expense, configuration management, maintaining production parody). 
+To-do, highlight the advent of containerisation (effective smart building, prod build and config parody can be more easily achieved).
+To-do, briefly discuss how distributed container technology works (distributed caching of layers and images across nodes)
+To-do, discuss production-grade container scheduling and management frameworks vs traditionally build farm technology (Kuberentes vs Jenkins).
+
+\subsection{Continuous Integration}
+Practices resembling Continuous Integration could be said
+to stem as far back as the original lean manufacturing method. 
+Nevertheless in software
+engineering the practice was codified by \citet{Beck} 
+as a core tenant of the Extreme Programming (XP) method.
+Following, CI was also included in the Agile Manifesto as an encouraged
+quality assurance practice. Amidst its wide adoption and popularity however, 
+there is some variability in how teams are employing the practice, resulting 
+is some debate as to exactly which integration activities one should follow \citep{Stahl}.
+Nevertheless, at its core, CI forwards several central principles and high-level activities.
+
+\subsubsection{CI Activities}
+Before implementing CI a process for a given project, all software source code
+and assets must be captured under a version control system (e.g. Git, SVN or Mercurial).
+Such a system manages file changes using a controlled access repository. Importantly,
+this provides the mechanism for developers to persist and maintain a mainline branch of the working software 
+(e.g. the head or trunk branch), this is where any desired contributions are to be frequently 
+integrated/merged \citep{Vas}. Version control systems also support reverting back to
+previous revisions of the software, which is commonly availed of in CI. 
+\par
+Central to CI is the mechanism in which integrations are built, tested and fed back to the team. 
+More often than not an automated CI system will manage these tasks. Today existing systems
+are available as either hosted services or standalone setups \citep{Gous}, and there are
+a multitude of such offerings in both the open-source and commercial spaces. 
+The most notable of which are Jenkins, TravisCI, CruiseControl, CircleCI and Bamboo. 
+As we will later explore, these systems offer varying approaches to how one configures and
+defines a build pipeline, nevertheless on an integration build machine or cluster the following workflow generally occurs:
+\begin{itemize}  
+\item the CI server will poll, or listen to, contributions 
+made against the version control repository.
+\item upon receiving a contribution, the CI 
+server will retrieve the source files and subsequently run build and tests scripts. 
+\item the following build results are most commonly made available through a web interface and possibly
+email.
+\item the built application package, such as a WAR or EXE file, is also made available \citep{Stahl}.
+\end{itemize}
+\par
+Continuously integrating reduces software project risk through 
+the preventative deciton of defects by in turn reducing quality 
+assumptions, and by eliminating manual repetitive integration
+processes ``time, costs and effort" can be saved  \citep{Vas}.
+CI also affords the software being in a deployable state at any time \citep{Jez}.
+Indeed, as a process CI is quite arguably beneficial, nevertheless challenges 
+do exist around implementing a robust CI system 
+and encompassing process.
+
+\subsubsection{CI Challenges}
+Employing an effective configuration management strategy is perhaps one of the
+most challenging aspects of CI. It involves ensuring that every application-level configuration
+needed per build phase (e.g. build, deploy and test) is captured and managed under one's
+version control system. The same is required for the configurations around one's entire
+production infrastructure, from the patch-level of an operating system (OS)
+to the configuration files of databases and load-balancers. Furthermore, all of 
+the dependencies between artefacts should also be expressed. \cite{Jez}
+define this as ``the process by which all artefacts relevant to
+your project, and the relationships between them, are stored, retrieved, uniquely
+identified, and modified". Codifying the entire state of an infrastructure in
+version control is certainly not trivial for most projects, particularly for non-greenfield projects.
+\par
+\cite{Jez} argue that a successful configuration strategy requires a ``holistic approach to 
+managing all infrastructure". This involves the ``desired state", or current configuration, of 
+one's infrastructure being tracked under version control. A major benefit of keeping
+absolutely everything in version control is that source 
+changes made at any level will trigger a CI build, which is in turn integrated, tested and deployable. 
+That includes DBAs updating SQL scripts and operations members changing firewall 
+rules. However, supporting this requires implementing automated infrastructure provisioning.
+For instance, bumping the OS version which serves the application software
+must trigger a CI build, but first this must cause 
+the OS to be re-provisioned on the CI server and the rest of the downward dependencies 
+to be rebuilt (e.g. OS libraries, middleware, application build script).  Tools like Chef, Puppet 
+and Ansible are established automation tools in this space however, as we will later discuss, 
+we argue that such heavyweight solutions are less well placed in modern CI practices.
+\par
+True for both hosted services and standalone setups, powerful servers or build farms usually 
+underly a CI system to ensure that build-times are as a quick as possible \citep{Campos}. As a consequence,
+these shared remote resources ``become a bottleneck when the number
+of developers increases" as more concurrent builds can occur \citep{Gambi}. Several practices have
+been adopted to alleviate these limitations. One addresses this horizontally through the ``componentisation of larger
+applications", wherein a codebase is divided into well-defined parts that are developed 
+and integrated separately. Thus, resulting in separate CI builds for each component \citep{Jez}.
+Other approaches emphasise on test selection. For instance, those tests related to the changes made in a given contribution
+are ran first (``pre-submit"), and if successful the integration is made, then the remaining tests are executed (``post-submit") and if a failure occurs the integration is rolled back \citep{Elbaum}.
+
+
+\subsubsection{CI in Practice}
+Industry studies have found that 57\% of companies are employing
+CI on a daily or weekly basis\footnote{\href{http://info.thoughtworks.com/rs/thoughtworks2/images/Continuous\%20Delivery\%20_\%20A\%20Maturity\%20Assessment\%20ModelFINAL.pdf}{http://info.thoughtworks.com/rs/thoughtworks2/images/\\Continuous\%20Delivery\%20_\%20A\%20\\Maturity\%20Assessment\%20ModelFINAL.pdf}}, however there is a clear disparity in how those
+practitioners are actually implementing the process. \citet{Stahl} have revealed that there are several disagreements in the existing research around how CI is actually practiced in industry. 
+\par
+CI has also become a well adopted practice in open-source projects,
+particularly for those projects (75\%) hosted on GitHub. Those surveyed 
+integrators have been found to use ``few quality evaluation tools other than
+continuous integration" in their integration workflows \citep{Gous}. 
+In the case of GitHub hosted projects, 
+TravisCI is currently the most popular tool \citep{Yu}. Similar to many other
+modern hosted CI solutions, a repository is primarily configured 
+with the system through a repository-level YAML file that declares the entire build workflow  \citep{Santos}.
+This file includes the infrastructural configuration (e.g. host OS type, host OS version, middleware dependancies), the application-level configuration, and finally the build and test scripts to be ran. The following \texttt{.travis-ci.yml} file is quite
+similar to that used on the Ruby on Rails project:
+\begin{minted}[
+    frame=single
+  ]{yaml}
+# use a Linux image with Ruby pre-installed
+os: linux 
+language: ruby
+sudo: false
+
+cache:
+  bundler: true
+  directories:
+    - # between builds cache installed `bundler' 
+    - # packages (gems) and any other directories
+before_install:
+  - # before starting services and add-ons fetch
+  - # and configure other system and/or 
+  - # middleware dependancies
+# ensure services are running and available 
+# over the network
+services:
+  - memcached
+  - redis
+  - rabbitmq
+addons: # use beta services
+  postgresql: ``9.4"
+before_script:
+  - # before running tests run some commands 
+  - # like (re)configuring the application
+script: 
+  - ci/run_tests.rb # test script to run
+  - ci/run_inter.rb # integration script to run
+# use each Ruby versions against the test script
+rvm:
+- 2.2.5
+- ruby-head
+# run the test script again under each specified 
+# environment variable 
+env:
+  matrix:
+    - `SOME_FLAG=0'
+    - `SOME_FLAG=1'
+notifications:
+  - # send builds statuses to IRC
+  \end{minted}
+\par
+Upon receiving a contribution, such a service will provision
+and build a virtual environment based on the repository's CI configuration
+file, cache those whitelisted directories for subsequent builds, then and run any
+specified scripts or commands (which are generally for testing and integrating).
+Most services offer a web interface wherein build statuses and be observed, and 
+integrations with other tools for notifying build statuses. As you would expect,
+a build failure occurs when a provisioning-, test- or integration-related command
+terminates unsuccessfully. 
+\par
+In theory, for most commercial software projects it is impossible to
+employ a mature CI process under such tools. The execution environments offered by such services are generally limiting. 
+For instance, TravisCI supports  only three virtual environments for build execution: Ubuntu 12.04,
+OS X Mavericks and Ubuntu 14.04. CI under these constraints may be
+adequate for software projects that only rely on unit- and functional- level
+testing. However, as we will later explore, more complex ``n-tierd" applications require build pipelines that 
+include acceptance testing on an environment akin to production. 
+\par
+Standalone setup CI systems offer greater flexibility around build 
+execution environments. For instance, under Jenkins one 
+can configure a build pipeline which automatically provisions
+build execution environments. Such a pipeline might involve
+running unit and functional tests in a smaller production-like environment, and
+upon success run acceptance tests in a production sandbox environment. Thus,
+truly increasing confidence in the integrated contribution and ensuring that
+the software is always in a working state. 
 
 \subsection{Containerisation}
-Todo, tie this section with the previous (CIs requirements of producing production-like environments effectively and efficiently).
+Selecting appropriate automation tools
+generally comes down to what is ``best fit for your
+environment and development process". \citet{Duvall}
+argues that this includes the functionality, reliability, longevity and 
+usability of the given tool. All too often these
+evaluations ``often transcend the practical and 
+escalate into what sounds like a religious debate". 
+As we will subsequently explore, recently established 
+standards and technologies in containerisation 
+afford significant opportunities to CI.
+
+\subsubsection{Establishing the Container Standard}
 Containerisation is a recently resurged computing paradigm that is
 having a significant impact on how applications are being built,
 shipped and ran. Along with being less resource intensive and
@@ -419,9 +336,10 @@ Subsequently the Docker CEO  announced the coming together of industry leaders a
 to form a ``minimalist, non-profit, openly governed project" named The Open Container Initiative (OCI), with the purpose of defining 
 ``common specifications around container format and runtime" \citep{Golub}. 
 Thereafter Docker donated its base container format and runtime, libcontainer, to be maintained by the OCI. 
-\par
+
+\subsubsection{Supporting `N'-Tiered Applications}
 Amidst establishing a container standard, Docker has made significant headway in 
-supporting multi-host cloud production environments. In terms of native tooling, in the last year Docker has implemented
+supporting multi-host cloud production environments. In terms of native tooling, over the last two years Docker has implemented
 a suite of tools for provisioning and orchestrating containers:
 \begin{itemize}
 \item \textbf{Docker Machine} allows one to provision Docker hosts, which are simply Linux virtual machines (VMs) supporting Docker, on a local machine or cloud. 
@@ -438,8 +356,125 @@ Consul for service discovery. Typically, such tools cannot be migrated away from
 Consequently, Docker have implemented this trio of orchestration tools in a generic way, 
 providing ``a standard interface to service providers so that they can almost be used as plug-and-play solutions" on top of the Docker platform \citep{holla}.
 
+\subsubsection{Applicability in CI}
+For a given software application or component, Docker allows
+one codify most of all potential environmental configuration
+into one manifest or declaration, a \texttt{Dockerfile}. Apart from the
+hardware resource requirements of the application (cpu, memory and disk), 
+herein one can capture all system- and application- level configurations. Thus,
+in CI terms, it effectively acts as a standardised built 
+script also capable of specifying target OS type and version.
+Consider that, for unit and functional testing only, we require a build execution environment
+for a NodeJS application running on Ubuntu Xenial, where ``\texttt{runTests.sh *}" executes our test suites.
+Such a \texttt{Dockerfile} would be as follows:
+\begin{minted}[
+    frame=single
+  ]{docker}
+FROM ubuntu:16.04 
+ENV NPM_CONFIG_LOGLEVEL info
+RUN apt-get update
+RUN apt-get install -y apt-utils curl git
+RUN curl -sL deb.nodesource.com/setup_6.x \
+  | bash -
+RUN apt-get install -y nodejs 
+RUN rm -rf /var/lib/apt/lists/* \
+  && apt-get purge -y --auto-remove apt-utils curl
+WORKDIR /app
+COPY . /app/
+RUN npm install
+RUN chmod +x /app/runTests.sh
+EXPOSE 8080
+ENTRYPOINT ["/app/runTests.sh"]
+CMD ["*"]
+\end{minted}
+\par 
+To-do, mention Docker's underlying use of filesystems and how this 
+makes builds layered, faster and cachable. To-do, mention how
+starting a container is extremely fast compared to VMs. To-do, 
+mention how n-tiered application acceptance testing may be
+supported (docker-compose running separate services) and lead into next section.
+
+%\begin{minted}[
+%    frame=single
+%  ]{bash}
+%docker build -t test-app . \
+% && docker run tests-app
+%\end{minted}
+
+
+%The container image, created and leveraged by Docker, 
+%is a manifest container defines how to create and run image. 
+%
+%An image is a filesystem and parameters to use at runtime. It doesn?t have state and never changes. A container is a running instance of an imag
+%
+%
+%Another important Docker feature is the manner in which
+%filesystems for the isolated processes are managed. On bootstrapping,
+%each container has its own replica of a root filesystem
+%defined by a Docker image. Harnessing layered and versioning
+%copy-on-write filesystems (AuFS or btrfs), changed
+%parts of the filesystem (diffs) are stored alongside a copy of
+%the corresponding filesystem parts before destructive operations,
+%allowing to restore any filesystem state during the
+%lifecycle of a container and to trace the history of write operations.
+%
+%
+%%As previously highlighted, one challenged faced in implementing a robust
+%%CI system is facilitating for the automated provisioning of build 
+%%execution environments. Given a host machine running Docker engine (the server
+%%daemon allowing clients manage containers), one can simply build an 
+%%implementation of 
+%
+%
+%
+%Each of these states of the filesystem can be tagged
+%and reused as a new image, allowing new containers to start
+%their lifecycle with that exact filesystem state.
+%In addition to the aforementioned prototypical filesystem
+%tree, a Docker image groups information about which root
+%process resp. entry point to invoke, potentially required adjustment
+%to the execution environment of the process (i. e.
+%the working directory and environment variables) and which
+%resource limits must be respected. The preferred way to create
+%an image is def ining aforementioned details in a Dockerfile5
+%. This Dockerile also allows to declare process invocations
+%and to add additional iles to the base image to adjust
+%aspects of the coniguration in the base image. Dockeriles
+%also have the advantage of an even more transparent formal
+%description of steps to obtain a desired initial coniguration
+%environment for processes to be run in containers.
+%With volumes Docker provides the possibility to mount
+%directories of the host ilesystem or other containers into
+%the ilesystem of a container6
+%, exempt from the versioning
+%by the copy-on-write ilesystem in favour of increased I/O
+%performance. Each container receives its own virtual network
+%interface, allowing it to connect to other nodes on the
+%internal virtual network and to the Internet through a host
+%bridge. With the EXPOSE keyword a container can select
+%which ports are available to the host system. To provide
+%services via network connections from within a container
+%to other containers, Docker ofers a linking mechanism7
+%.
+%Using links, stable host names and ports can be achieved
+%for inter-container network communication, further environment
+%variables from upstream containers are made available
+%as well. It provides a simple but efective way to interchange
+%small pieces of information required for successful orchestration.
+%Container-based operating system virtualisation has the
+%advantage of keeping all dependencies necessary to run an
+%application together while major parts (hardware and operating
+%system kernel) are shared between instances. We
+%expect that the main technical setup for users of this project
+%will be commodity hardware with moderate performance
+%characteristics. In such a context, the desired orchestration
+%of numerous micro services in isolated environments
+%with a complete full- or para-virtualised system for each service
+%would be prohibitively taxing on limited computation
+%power
+
 \subsection{Container Cluster Management}
-Todo, introduction to tie in CI and Docker. Todo, reference pains of provisioning CI 'production-like' clusters. Practitioners and industry experts note that cluster management tooling supporting Docker
+To-do, introduction to tie in CI and Docker. To-do, reference pains of provisioning CI 'production-like' clusters. Practitioners and industry experts note that cluster management tooling supporting Docker
 vary greatly in terms of capability, architecture and target cluster proportion
 \citep{goasguen, holla}. This is unsurprising when we consider that all infrastructures 
 are not subject to same orchestration requirements and software release cycles.
@@ -469,11 +504,137 @@ Container-based service discovery involves the ability to dynamically register a
 As previously highlighted, Docker Compose provides a mechanism to link named containers on the same host. This is accomplished by ``inserting the first container's IP address in /etc/hosts when starting the second container". Importantly, the IP address of a container living on a different host ``is not known by the docker daemon running in the current host". The ambassador container pattern achieves cross-host container linking between provider and consumer containers by dynamically configuring network connections through respective intermediate ambassador containers \citep{holla}.
 
 \subsubsection{Kubernetes}
-Todo, mention project history. Todo, mention the cluster topology it forwards. Todo, feature run-down. Todo, mention some examples of applications of kubernetes as a build farm and/or in testing.
+To-do, mention project history. To-do, mention the cluster topology it forwards. To-do, feature run-down. To-do, mention some examples of applications of kubernetes as a build farm and/or in testing.
 \lipsum[1] 
 
-\section{Evaluation}
-Todo, describe Travis and Jenkins in some detail. Todo, note their poor container/Docker support. Todo, matrix of comparison.
+\section{Design and Evaluation}
+To-do, note the poor container/Docker in TravisCI and Jenkins support. To-do, describe LibrumCI system some detail (architecture, screenshots, etc). To-do, matrix of tool comparison.
+
+%Creating an automated process for deploying infrastructural changes from
+%version control is at the core of good change management. The most effective
+%way to do this is to require all changes to be made to your environments via a
+%central system. Use a testing environment to work out the change you want to
+%make, test it in a fresh, production-like staging environment, put it into configuration
+%management so that future rebuilds incorporate it, have it approved, and
+%then have the automated system roll out the change. Many organizations have
+%built their own solutions to this problem, but if you do not have one, you can
+%use a data center automation tool like Puppet, CfEngine, BladeLogic, Tivoli, or
+%HP Operations Center.
+%
+%
+%Puppet and CfEngine are two examples of tools that make it possible to manage
+%operating system configuration in an automated fashion. Using these tools, you
+%can declaratively define things such as which users should have access to your
+%boxes and what software should be installed. These definitions can be stored in
+%your version control system. Agents running on your systems regularly pull the
+%latest configuration and update the operating system and the software installed
+%on it. With systems like these, there is no reason to log into a box to make fixes:
+%All changes can be initiated through the version control system, so you have a
+%complete record of every change?when it was made and by whom.
+%Virtualization can also improve the efficiency of the environment management
+%process. Instead of creating a new environment from scratch using an automated
+%process, you can simply take a copy of each box in your environment and store
+%it as a baseline. Then it is trivial to create new environments?it can be done by
+%clicking a button. Virtualization has other benefits, such as the ability to consolidate
+%hardware and to standardize your hardware platform even if your
+%applications require heterogeneous environments.
+%
+%This chapter describes how to keep your application releasable at all times, despite
+%being under constant change. One of the key techniques for this is componentization
+%of larger applications, so we will treat componentization, including
+%building and managing large projects with multiple components, at length.
+%What is a component? This is a horribly overloaded term in software, so we
+%will try to make it as clear as possible what we mean by it. When we talk about
+%components, we mean a reasonably large-scale code structure within an application,
+%with a well-defined API, that could potentially be swapped out for another
+%implementation. A component-based software system is distinguished by the fact
+%that the codebase is divided into discrete pieces that provide behavior through
+%well-defined, limited interactions with other components.
+%The antithesis of a component-based system is a monolithic system with no
+%clear boundaries or separation of concerns between elements responsible for
+%different tasks. Monolithic systems typically have poor encapsulation, and tight
+%coupling between logically independent structures breaks the Law of Demeter.
+%The language and technology are unimportant?it has nothing to do with GUI
+%widgets in Visual Basic or Java. Some people call components ?modules.?
+% Employing a component-based design is often described as encouraging reuse
+%and good architectural properties such as loose coupling. This is true, but it also
+%has another important benefit: It is one of the most efficient ways for large teams
+%of developers to collaborate. In this chapter, we also describe how to create and
+%manage build systems for component-based applications.
+%If you work on a small project, you may be thinking of skipping this chapter
+%after reading the next section (which you should read regardless of the project
+%size). Many projects are fine with a single version control repository and a simple
+%deployment pipeline. However, many projects have evolved into an unmaintainable
+%morass of code because nobody made the decision to create discrete components
+%when it was cheap to do so. The point at which small projects change into
+%larger ones is fluid and will sneak up on you. Once a project passes a certain
+%threshold, it is very expensive to change the code in this way. Few project leaders
+%will have the audacity to ask their team to stop development for long enough to
+%rearchitect a large application into components.
+% 
+% 
+%ensure that your team can develop
+%as efficiently as possible, while keeping your application always in a releasable
+%state. As usual, the principle is to ensure that teams get fast feedback on the effect
+%of their changes on the production-readiness of the application. One strategy for
+%meeting this goal is to ensure every change is broken down into small, incremental
+%steps which are checked into mainline. Another is to break your application down
+%into components.
+%Dividing an application into a collection of loosely coupled, well-encapsulated,
+%collaborating components is not only good design. It allows for more efficient
+%collaboration and faster feedback when working on large systems. Until
+%your application gets sufficiently large, there is no need to build your components
+%individually?the simplest thing is to have a single pipeline that builds your whole
+%application at once as the first stage. If you concentrate on efficient commit builds
+%and fast unit testing, and implement build grids for acceptance testing, your
+%project can grow to a much larger degree that you might think possible. A team
+%of up to 20 people working full-time for a couple of years should not need to
+%create multiple build pipelines, although of course they should still separate their
+%application into components.
+%Once you exceed these limits, though, the use of components, dependencybased
+%build pipelines, and effective artifact management are the key to efficient
+%delivery and fast feedback. The beauty of the approach described in this chapter
+%is that it builds on the already beneficial practice of component-based design.
+%This approach avoids the use of complex branching strategies, which usually
+%leads to serious problems in integrating your application. However, it does depend
+%on having a well-designed application that is amenable to a componentized build.
+%Unfortunately, we have seen too many large applications that cannot be easily
+%componentized in this way. It is very hard to coax such an application into a
+%state where it can be easily modified and integrated. So, make sure that you are
+%using your technology?s toolchain effectively to write code that can be built as a
+%set of independent components once it gets large enough.
+
+%Some address this problem by defining techniques that
+%filter and prioritize the tests scheduled for execution such
+%that developers could get interesting results within acceptable
+%time also in the presence of resource shortage [1]. Others
+%instead leverage cloud platforms to access increasingly large
+%and elastic pools of computing resources to reduce the risk of
+%incurring in bottlenecks [2].
+%Current solutions mostly focus on improving the efficiency
+%of cloud-based continuous integration by automating repetitive
+%activities to setup and execute integration and system tests [3],
+%which account for the coordinated deployment of several
+%virtual machine instances and their configuration by installing
+%software components, restoring system state, and configuring
+%test drivers. As an example, system testing of a two-tiered
+%Web service requires at least the deployment of two virtual
+%machines, the installation of the application server code and
+%the business logic on the ?front-end? server, and the installation
+%of the database server and its content in the ?back-end? server.
+%This setup process repeats for all the instances that are
+%started by the tests; therefore, automated solutions have the
+%potential of speeding up the overall test execution. However,
+%blind automation in the cloud might result in surprisingly
+%high costs and long execution times that can easily overpass
+%the potential benefits of automation and jeopardize the use
+%of cloud-based continuous integration environments. In fact,
+%cloud providers charge the usage of any resource, including
+%network communications, and the set up of virtual machines
+%might involve the download of large amount of data and the
+%re-installation of software components whose costs accumulate
+%over test executions.(Poster)
+
 \lipsum[1] 
 
 \section{Conclusions}
