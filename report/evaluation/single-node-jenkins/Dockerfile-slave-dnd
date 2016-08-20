@@ -1,0 +1,12 @@
+# base from latest Jenkins-slave image
+FROM jenkinsci/ssh-slave
+
+# fetch internal Docker Engine (Docker-in-Docker)
+ENV DIND_COMMIT 3b5fac462d21ca164b3778647420016315289034
+RUN wget "https://raw.githubusercontent.com/docker/docker/${DIND_COMMIT}/hack/dind" -O /usr/local/bin/docker \
+  && chmod +x /usr/local/bin/docker
+# expose ssh for master
+EXPOSE 22
+
+# parent Docker process must be with 'docker run --privileged ...'
+RUN docker -v

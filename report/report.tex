@@ -1,14 +1,15 @@
 \documentclass{report}
 
-\usepackage{natbib} % Harvard style bib
+\usepackage{natbib} 
 \usepackage{lipsum}
 \usepackage{url}
 \usepackage{hyperref}
 \usepackage{minted}
+\usepackage{graphicx}
 
 \begin{document}
 
-\title{LibrumCI: Leveraging Container Cluster Management Framework Natives in Continuous Integration}
+\title{LibrumCI: Leveraging Container Cluster Management Framework Natives in continuous integration}
 
 \numberofauthors{1}\author{
 \alignauthor
@@ -24,11 +25,29 @@ Anthony Troy\\
 \maketitle
 
 \begin{abstract}
-\lipsum[1-2] 
+Continuous integration practices seek to reduce software deployment lead time
+through ensuring that team members are frequently integrating work that is 
+verified by automated builds and tests in production-like environments. 
+Effective continuous integration pipelines must be capable of automatically
+provisioning such environments for testing upon team members contributing any
+infrastructural or environmental changes. Similarly,
+robust continuous integration infrastructures must be capable of such
+automated provisioning to decrease build execution load. VM-based environments
+struggle to efficiently support such workflows due the challenges and limitations 
+around the automated provisioning and configuration management of virtual machines.
+\par
+We forward that leveraging container-based virtualisation can strongly reduce
+continuous these integration impedances through the lightweight and portable affordances of containers. We demonstrate
+that the alternative model of cluster management under containerisation offsets continuous
+integration bottlenecks by supporting thousands of concurrent build executions.
+Upon evaluating the application of fully-containerised CI workflows under existing CI systems 
+we consider the successes and short comings of these approaches in the design of a purpose-built container-native
+CI system. Subsequently, we contribute LibrumCI, a first-effort continuous integration system designed 
+to support expansive integration loads of container-based projects. 
 
 \end{abstract}
 
-\keywords{Continuous Integration; Kubernetes; Continuous Delivery; Docker; Cluster Management Frameworks; VCS; Agile}
+\keywords{continuous integration; Kubernetes; Jenkins; Docker; Cluster Management Frameworks; VCS; Agile}
 
 \section{Introduction}
 With organisational structures diversifying to off-shore, insource and outsource
@@ -36,61 +55,7 @@ development needs, software is increasingly being developed by fully- or
 partially-distributed teams. The contributions from team members must, at a minimum, be first validated
 under a test infrastructure that is automated and robust enough to allow for
 high levels of code churn. This development requirement is reflected in 
-in the sustained and growing adoption of Continuous Integration (CI) practices in open-source and enterprise software projects \citep{Duvall, Fitz, Vas}. 
-\par
-To-do, mention the requirements and then pitfalls/challenges of CI (expense of provisioning prod-like envs, configuration management, slow feedback). To-do, mention the advent of containerisation and container cluster management frameworks. To-do, mention the lacking CI open-source tooling support for containers. To-do, define container cluster management frameworks and mention how they can remedy CI challenges, CI container support and more. 
-
-%One key innovation
-%is the idea of continuous integration (CI); essentially, CI attempts
-%to automatically build and deploy the software in a
-%?sandbox?, and automatically run a collection of tests when
-%the pull request is received. By automating these steps, a
-%project can hope to gain both productivity (more pull requests
-%accepted) and quality (the accepted pull requests are
-%prescreened by the automation provided by CI).
-%Starting from a newly mined data set of the usage of CI
-%in GitHub projects, in this paper we looked at the software
-%engineering outcomes which present di?erentially with
-%the introduction of CI versus without. In particular, our
-%contributions are:
-%? We collected a comprehensive data set of 246 GitHub
-%projects which at some point in their history added
-%the Travis-CI functionality to the development process.
-%Our data is available online at https://github.com/
-%yuyue/pullreq_ci.
-%? We found that after CI is added, more pull requests
-%from core developers are accepted, and fewer are rejected;
-%and fewer submissions from non-core developers
-%get rejected. This suggests that CI both improves
-%the handling of pull requests from insiders, and has an
-%overall positive e?ect on the initial quality of outside
-%submissions.
-%? Despite the increased volume of pull requests accepted,
-%we found that introduction of CI is not associated with
-%any diminishment of user-reported bugs, thus suggesting
-%that user-experienced quality is not negatively affected.
-%We did see an increase in developer reported
-%bugs, which suggests that CI is helping developers discover
-
-%CI can enable you to release deployable software at any point in time.
-%From an outside perspective, this is the most obvious benefit of CI. We
-%could talk endlessly about improved software quality and reduced
-%risks, but deployable software is the most tangible asset to ?outsiders?
-%such as clients or users. The importance of this point cannot be overstated.
-%CI provides the ability to notice trends and make effective decisions,
-%and it helps provide the courage to innovate new improvements.
-%Overall, effective application of CI practices can provide greater confidence
-%in producing a software product. With every build, your team
-%knows that tests are run against the software to verify behavior, that
-%project coding and design standards are met, and that the result is a
-%functionally testable product. (CI book)
-
-\section{Related Work}
-\lipsum[1] 
-
-
-\section{Background}
-Traditionally most software projects have been characterised as having
+in the sustained and growing adoption of continuous integration (CI) practices in open-source and enterprise software projects \citep{Duvall, Fitz, Vas}. Traditionally most software projects have been characterised as having
 poor integration practices. More often than often not a siloed team 
 will conduct all development activities, arguably over a lengthy period,
 and defer acceptance testing and code integration. Importantly, during
@@ -105,21 +70,66 @@ is that when some projects arrive at this point ``their software is not fit for
 purpose". These long-winded and challenging phases, commonly referred
 to as ``integration hell", pose difficulties for the engineers working through the integration
 and too for the leads and managers estimating the project delivery.
-\par
-Applications of Continuous Integration practices have been found to effectively 
+Applications of continuous integration practices have been found to effectively 
 remove these phases at source \citep{Vas, Fitz, Jez, Duvall}. As a practice, CI seeks to reduce software deployment lead time by
 facilitating frequent code churn through verifying contributions with automated 
-builds and tests. Depending on the structure of the team and software, \citet{Jez} 
-advise that a team member should integrate their work at least once daily. An effective 
-undertaking of this process means that the software is always in a working state. 
+builds and tests on production-like environments. \citet{Jez} advise that a team member integrate their work at least once daily, an effective undertaking of this process will mean that the software is always in a working state. 
 \par
-To-do, highlight of challenges applying CI (provisioning build farms with things like Puppet, compute expense, configuration management, maintaining production parody). 
-To-do, highlight the advent of containerisation (effective smart building, prod build and config parody can be more easily achieved).
-To-do, briefly discuss how distributed container technology works (distributed caching of layers and images across nodes)
-To-do, discuss production-grade container scheduling and management frameworks vs traditionally build farm technology (Kuberentes vs Jenkins).
+Effectively implementing a CI process first requires an extensive configuration
+management strategy and versioning approach wherein all sources
+and configurations are managed and tracked under version control. Thereafter,
+the processes of provisioning, environment configuration, building, testing and code integration
+can all be automated. Given that continuous integration environments involve
+teams sharing remote resources, workflows can easily 
+be impeded as integration demand increases. Integrations can be similarly
+hampered as the complexity and configuration of the software changes.
+In practice many CI pipelines consists of two types execution environments:
+production-like (staging) environments for acceptance and system testing; and minimal 
+environments for unit and functional testing. 
+\par
+To not hinder CI workflows staging environments need to be automatically 
+reprovisioned and reconfigured to respect any environmental changes made by team members.
+Doing so using VM-based virtualisation is generally quite cumbersome and expensive \citep{Gambi}.
+These constraints also proceed effectively supporting elastic continuous integration environments.
+We argue that leveraging container-based virtualisation can strongly reduce
+continuous integration impedances around environment provisioning and configuration
+through the lightweight and portable affordances of containers. Additionally, we demonstrate
+that the alternative model of cluster management under containerisation offsets continuous
+integration bottlenecks by supporting up to thousands of concurrent build executions.
+Upon evaluating the application of fully-containerised CI workflows under existing CI systems 
+we consider the successes and short comings of these approaches in the design of a purpose-built container-native
+CI system. Subsequently, we contribute LibrumCI, a first-effort continuous integration system designed 
+to support expansive integration loads of container-based projects. 
+%
+%This paper describes...high-level contribution
+%
+%The paper makes two contributions...exact contributions
+%
+%The next section presents foo. Section 3 bar. Section 4 baz.
+%Finally, Section 6 offers some concluding remarks.
 
+\section{Related Work}
+Early studies around container-based virtualisation techniques
+proceed with the proposal of resource containers \citep{Banga} and security
+jails \citep{Kamp}.  With Linux V-Server becoming the first notable system providing
+container virtualisation at operating system level, \citet{Soltesz} provides a comprehensive comparative 
+study on the qualitative benefits of containers. Some years later
+came research involving Docker-based containers and their inherent capability of effectively
+reproducing research environments \citep{Boettiger}, which is particularly identical to software provisioning 
+and configuring management. Later performance-specific comparative studies were also conducted 
+using Docker \citep{Agarwal}.
+\par
+Subsequent works around containerised clouds note 
+the facets of clustering and managing distributed containers \citep{Claus, Verma}, container 
+cluster management frameworks are also highlighted. 
+Expectedly, over the last two years many books targeted at practitioners have also been  
+published, highlighting the nuances and benefits of containerised cluster management
+\citep{db, holla, Rensin, Brewer}. No works yet exist around
+leveraging container-based virtualisation in continuous integration environments.  
+
+\section{Background}
 \subsection{Continuous Integration}
-Practices resembling Continuous Integration could be said
+Practices resembling continuous integration could be said
 to stem as far back as the original lean manufacturing method. 
 Nevertheless in software
 engineering the practice was codified by \citet{Beck} 
@@ -159,7 +169,7 @@ email.
 Continuously integrating reduces software project risk through 
 the preventative deciton of defects by in turn reducing quality 
 assumptions, and by eliminating manual repetitive integration
-processes ``time, costs and effort" can be saved  \citep{Vas}.
+processes ``time, costs and effort" can be saved \citep{Vas}.
 CI also affords the software being in a deployable state at any time \citep{Jez}.
 Indeed, as a process CI is quite arguably beneficial, nevertheless challenges 
 do exist around implementing a robust CI system 
@@ -281,13 +291,17 @@ testing. However, as we will later explore, more complex ``n-tierd" applications
 include acceptance testing on an environment akin to production. 
 \par
 Standalone setup CI systems offer greater flexibility around build 
-execution environments. For instance, under Jenkins one 
-can configure a build pipeline which automatically provisions
-build execution environments. Such a pipeline might involve
-running unit and functional tests in a smaller production-like environment, and
-upon success run acceptance tests in a production sandbox environment. Thus,
-truly increasing confidence in the integrated contribution and ensuring that
-the software is always in a working state. 
+execution environments. \citet{Duvall} forwards several tools such
+as CruiseControl, Apache Continuum, IBM's UrbanCode Deploy and Draco.NET 
+as potential standalone solutions. In Jenkins, also a popular open-source contender in this space, 
+one can define build pipelines comprised of one or more phases, and each of which can be executed on a different  
+execution environment \citep{Smart}. For instance, one might manually provision and configure a 
+minimal compute environment for unit- and functional-level testing and a more production-like 
+one for acceptance testing. Having installed and configured Jenkins on those machines, one could then
+configure the given repository and define the pipeline via the Jenkins UI.
+Tools such as Jenkins can also be extended to leverage cloud features. For instance,
+the Amazon EC2 Plugin, Azure Slave Plugin allow one to dynamically
+provision compute resources in a distributed master/slave Jenkins setup \citep{Smart}.
 
 \subsection{Containerisation}
 Selecting appropriate automation tools
@@ -335,43 +349,41 @@ Interestingly, libcontainer itself was the first project to provide a standard i
 Subsequently the Docker CEO  announced the coming together of industry leaders and others in partnership with the Linux Foundation
 to form a ``minimalist, non-profit, openly governed project" named The Open Container Initiative (OCI), with the purpose of defining 
 ``common specifications around container format and runtime" \citep{Golub}. 
-Thereafter Docker donated its base container format and runtime, libcontainer, to be maintained by the OCI. 
+Thereafter Docker donated its base container format and runtime, libcontainer, to be maintained by the OCI. Docker Engine and Rocket (by CoreOS) are both
+container runtimes which adhere to these standards. 
 
-\subsubsection{Supporting `N'-Tiered Applications}
-Amidst establishing a container standard, Docker has made significant headway in 
-supporting multi-host cloud production environments. In terms of native tooling, over the last two years Docker has implemented
-a suite of tools for provisioning and orchestrating containers:
-\begin{itemize}
-\item \textbf{Docker Machine} allows one to provision Docker hosts, which are simply Linux virtual machines (VMs) supporting Docker, on a local machine or cloud. 
-Its pluggable driver API currently supports ``provisioning Docker locally with Virtualbox as well as remotely" on cloud providers such Digital Ocean, AWS, Azure and VMware.
-\item \textbf{Docker Swarm} is a clustering solution which takes the standard 
-``Docker Engine and extends it to enable you to work on a cluster of containers". 
-This in turn allows one to ``manage a resource pool of Docker hosts and schedule
-containers to run transparently on top, automatically managing workload and providing failover services".
-\item \textbf{Docker Compose} is the ``glue" allowing one to compose a multi-host application on top of a Swarm cluster whereby you
-can specify how each application is to be ran in the the cluster, in turn allowing one to orchestrate and choreograph local or cloud containers.
-\end{itemize}
-\noindent In many cases an existing cloud infrastructure depends upon one or more orchestration tools, for example 
-Consul for service discovery. Typically, such tools cannot be migrated away from easily and in turn cause ``vendor lock-in".
-Consequently, Docker have implemented this trio of orchestration tools in a generic way, 
-providing ``a standard interface to service providers so that they can almost be used as plug-and-play solutions" on top of the Docker platform \citep{holla}.
-
-\subsubsection{Applicability in CI}
+\subsubsection{Applicability of Containers in CI}
+In terms of the configuration and provisioning of execution environments, containers  
+offer a much a more lightweight and portable alternative to that of the traditional VM-based approach.
+Both approaches are ``virtualisation
+techniques, but solve different problems". A container-based ecosystem lends itself better 
+towards the ``packaging, delivering and orchestrating" of execution environments, having
+a more PaaS focus. Whereas VMs emphasise more on ``hardware allocation and management",
+having a more IaaS foucs \citep{Claus}. Consequently, both approaches bear
+``significant qualitative differences". Most notably, the ``start-up time of a full container is 6x lower than a
+VM, and memory footprint is 11x lower than a VM" \citep{Agarwal}.
+\par
+With respect to VM-based environments, the container image standard established and implemented by Docker affords 
+further qualitative advantages, particularly around the area of configuring execution environments.   
 For a given software application or component, Docker allows
 one codify most of all potential environmental configuration
 into one manifest or declaration, a \texttt{Dockerfile}. Apart from the
 hardware resource requirements of the application (cpu, memory and disk), 
 herein one can capture all system- and application- level configurations. Thus,
-in CI terms, it effectively acts as a standardised built 
-script also capable of specifying target OS type and version.
-Consider that, for unit and functional testing only, we require a build execution environment
+from the perspective of a CI system, a  \texttt{Dockerfile} can
+act as an all encompassing build manifest. Consider that, 
+for unit and functional testing only, we require a build execution environment
 for a NodeJS application running on Ubuntu Xenial, where ``\texttt{runTests.sh *}" executes our test suites.
 Such a \texttt{Dockerfile} would be as follows:
 \begin{minted}[
     frame=single
   ]{docker}
-FROM ubuntu:16.04 
+# base from a clean Ubuntu Xenial image
+FROM ubuntu:16.04
+# set static build configurations
 ENV NPM_CONFIG_LOGLEVEL info
+ENV NODE_ENV test
+# fetch and install build/runtime dependancies
 RUN apt-get update
 RUN apt-get install -y apt-utils curl git
 RUN curl -sL deb.nodesource.com/setup_6.x \
@@ -379,266 +391,394 @@ RUN curl -sL deb.nodesource.com/setup_6.x \
 RUN apt-get install -y nodejs 
 RUN rm -rf /var/lib/apt/lists/* \
   && apt-get purge -y --auto-remove apt-utils curl
-WORKDIR /app
-COPY . /app/
-RUN npm install
-RUN chmod +x /app/runTests.sh
+# specify forwarded container ports to the host
 EXPOSE 8080
+# create, and cd into, a HOME directory
+WORKDIR /app
+# cp local sources into the image
+COPY ./myLocalApp/ /app/
+# cp local app configuration into the image
+COPY ./config-test.conf /app/
+# install application dependancies
+RUN npm install
+# specify entrypoint for running the container 
 ENTRYPOINT ["/app/runTests.sh"]
+# specify default arguments for the entrypoint
 CMD ["*"]
 \end{minted}
+\par
+In terms of CI, perhaps one of the greatest benefits that is afforded here is 
+Docker's distributed and opportunistic caching mechanism for builds.
+Firstly, it is important to note that a built container manifest, an \textit{image}, is just a stateless filesystem that acts
+as a parameter to a container runtime. Thus, a \textit{container} is an running instance of an \textit{image}.
+An image begins with a replica of a root filesystem (defined in a \texttt{Dockerfile} with the \texttt{FROM} instruction).
+Following, through leveraging ``layered and versioning
+copy-on-write filesystems (AuFS or btrfs)", the termination of
+all subsequently defined instructions create additional image \textit{layers}, and references to each are
+stored for caching alongside their respective filesystem \citep{Arndt}. Thus, for example,
+if a host machine is building our example image for the first time, and has not previously
+built  \texttt{ubuntu:16.04}, then all instructions in the file will be terminated and cached.
+If we are rebuilding the image, and have only modified the \texttt{config-test.conf} source, 
+the respective \texttt{COPY} layer for that source with all subsequent layers become invalidated and then rebuilt.
+
+\section{Evaluation and Design}
+We evaluate in detail some applications of containerisation with existing CI systems, and subsequently forward the design
+and implementation of our first-effort fully-containerised continuous integration system. To fully avail of the advantages of containerisation we argue that the entirety of CI systems should be capable running under container-based virtualisation. Hence, the system and its runtime components being containerised, including the individual executions of its CI builds. Thus, the specific scope of our evaluation is to measure the effectiveness of existing systems running containerised builds while being ran themselves as containers. As previously highlighted, CI system
+offerings are either generally either hosted services or standalone setups. With the exception of TravisCI and some other 
+less notable systems, most hosted services are proprietary. TravisCI is foremost a hosted service but also supports standalone deployments.
+GoCD\footnote{\href{http://martinfowler.com/articles/go-interview.html}{http://martinfowler.com/articles/go-interview.html}} is a somewhat lesser known system, but perhaps only because it is the recent predecessor of CruiseControl, that too supports standalone deployments.
+Thus, we consider both TravisCI, Jenkins and GoCD for our evaluations.
+\par
+As previously highlighted, scalable and robust CI systems are 
+predicated by their ability to facilitate high-levels of code churn. That is,
+being capable of handling increasing numbers of contributions while 
+sustaining build throughput. A container-native CI system is the first 
+steps toward this path. By running and managing the system itself and all of its generated 
+build executions through containers we can utilise less resources. 
+Unfortunately, both TravisCI and GoCD do not fully support all of their components 
+being ran as containers. For TravisCI\footnote{\href{https://enterprise.travis-ci.com/docs#host-machines}{https://enterprise.travis-ci.com/docs#host-machinesl}} 
+and similar for GoCD, one or more Docker worker hosts can run all ``tests/jobs in isolated containers", 
+however it does require its master and related services being hosted on a VM-based machine.
+Fortunately, Extensions exist for running Jenkins under a multi-container setup\footnote{\href{https://www.docker.com/sites/default/files/UseCase/RA_CI\%20with\%20Docker_08.25.2015.pdf}{https://www.docker.com/sites/default/files/UseCase/\\RA_CI\%20with\%20Docker_08.25.2015.pdf}}, i.e.
+one master Jenkins container and \textit{n} amount slave containers.
+
+
+\subsection{Fully-Containerised Single-Host Jenkins}
+Given a single Docker host we evaluate a fully-containerised Jenkins 
+distributed master/slave Jenkins setup. That is, on one container-based
+host machine we run a container master container and one or more slave containers,
+which themselves run the execution environments for builds as separate containers. 
+We expect the aforementioned qualitative container benefits from running the involved static 
+containers (master/slave) in this set up, however as we will demonstrate 
+there are several approaches and considerations to be made when creating and managing
+dynamic and ephemeral containers.
+\par
+We first consider the approach of running an internal Docker daemon within
+each slave container. Running the master and slave containers is straightforward. 
+Jenkins slave agents can be registered with a master using either Java Web Start (JNLP) or SSH.
+Given our Unix-based environment, we favour SSH and generated key-pair. This can be 
+achieved by extending the base Jenkins master image with a custom Dockerfile or 
+by manually generating the keys through a command on the running container. 
+We can then define a custom slave image which installs the special purpose (Docker-in-)Docker 
+Engine as follows:
+\begin{minted}[
+    frame=single
+  ]{docker}
+# base from latest Jenkins-slave image
+FROM jenkinsci/ssh-slave
+# fetch the Docker(-in-Docker) Engine
+RUN wget "https://raw.githubusercontent.com\
+  /docker/docker/\
+  3b5fac462d21ca164b3778647420016315289034\
+  /hack/dind" -O /usr/local/bin/docker \
+  && chmod +x /usr/local/bin/docker
+# expose ssh port for master
+EXPOSE 22
+# capture the ssh public key shared with master
+ENV JENKINS_SLAVE_SSH_PUBKEY ssh-rsa AAAABccc123
+\end{minted}	
+A typical container is not allowed to access any host devices,
+however as our slave containers run their own Docker daemons they will need to be permitted access. 
+Such is achieved by running the slaves with a ``privileged" flag. Given we run \textit{n} amount of slave instances
+with this flag, we can then begin configuring repositories and pipelines via the
+Jenkins master UI. Notwithstanding the system only having the compute resources of a single machine, 
+we can see in figure~\ref{fig:jenkins-1} that there are some inefficiencies to this nested containerisation
+approach.
+\begin{figure}[htp]
+      \centering
+      \includegraphics[width=8.6cm,height=5.3cm]{jenkins-1}
+      \caption{Single-host Distributed Jenkins with Nested Build Containers} 
+      \label{fig:jenkins-1}
+\end{figure}
+\par
+The outer Docker daemon on the host machine will allow
+for layer-sharing between the master (jenkins-master) and the slave
+containers (jenkins-slave-docker-\textit{n}). For instance,
+both images depend up open-JDK-7 so once the master image
+has fetched the layer it is cached for any subsequently built slaves.
+Importantly, the inner-daemon of slaves is not shared, and this is 
+particularly inefficient if we wish to make all slave containers ephemeral as
+their cache would be eliminated once removed (i.e. only provisioning slaves when required and removing them afterward). 
+\par
+Docker clients issuing \textit{build} or \textit{run} commands do so
+against the default daemon process which lives as a UNIX domain socket 
+(\textit{/var/run/docker.sock}). We can reduce these some of the 
+shortcomings of our current approach by sharing this socket with the
+slave containers. The builds they create via the Docker client in turn
+become sibling containers that avail of the same cache.
+It is important to note that this is not a thorough solution,
+the daemon itself is a highly privileged process on the host machine.
+Sharing it with other processes has security implications.
+Notwithstanding this, in our slave image we instead install the standard
+Docker Engine to use the client API commands within CI builds.
+\begin{minted}[
+    frame=single
+  ]{docker}
+  		....
+# fetch docker engine and don't run the daemon
+RUN set -ex\
+  && apt-get install apt-transport-https\ 
+  ca-certificates\
+  && apt-key adv --keyserver\ 
+  hkp://p80.pool.sks-keyservers.net:80\
+   --recv-keys\
+  58118E89F3A912897C070ADBF76221572C52609D\
+  && echo "deb https://apt.dockerproject.org/repo\
+  debian-jessie main" > \
+  /etc/apt/sources.list.d/docker.list \
+  && apt-get update \
+  && apt-get install docker-engine
+		....
+\end{minted}	
+\begin{figure}[htp]
+      \centering
+      \includegraphics[width=8.6cm,height=5.3cm]{jenkins-2}
+      \caption{Single-host Distributed Jenkins with Sibling Build Containers} 
+      \label{fig:jenkins-2}
+\end{figure}
+
+\subsection{Fully-Containerised Multi-Host Jenkins}
+Compared to a VM-based approach, containers are inherently superior at scale.
+Containerisation is a lightweight virtualisation technique, best designed for 
+the swift provisioning of execution units that are ``short-lived and fragile".
+Thus, as opposed to being concerned with provisioning and configuration management,
+containers at scale instead require an emphasis on orchestration to ``run efficiently
+and resiliently" \citep{Rensin}. Furthermore, containers running on multi-host environments
+have different scheduling concerns to that of VMs. Consider that multiple containers can run
+on one host, to best utilise resources new containers will need to be scheduled on the most appropriate
+host. We demonstrate this differing model of cluster management through evaluating fully-containerised multi-host Jenkins 
+solutions.
+\par
+Consider distributing our sibling-container Jenkins solution across multiple machines.
+In addition to the master node, we must provision \textit{n} amount of slave-dedicated host machines. 
+Jenkins supports executing only one concurrent job per slave agent \citep{Smart}. Thus, given that \(n\) is the number
+of slave container on a host, we afford for the system scheduling \(n+1\) containers per host. Henceforth, 
+dependant on compute capacity of each host we determine how many Jenkins slave containers we will run on each. 
+Finally,  we can configure the running slaves to discover the master and begin configuring repositories for CI via the UI. 
 \par 
-To-do, mention Docker's underlying use of filesystems and how this 
-makes builds layered, faster and cachable. To-do, mention how
-starting a container is extremely fast compared to VMs. To-do, 
-mention how n-tiered application acceptance testing may be
-supported (docker-compose running separate services) and lead into next section.
+Such a distributed solution
+affords build load to be spread reasonably effectively but utilises resources somewhat poorly while incurring notable bottlenecks.
+As a Docker daemon runs on a per-host basis, only slaves running on the same host will share the same
+build cache. Ideally any previously built layers should be cached for use across the entire cluster.
+Furthermore, the approach for orchestrating slave containers
+is manual and the mechanism for scheduling their respective CI build containers is static (as they will always
+be scheduled on the same host even if it is overcapacity).
+\par
+Our sibling build containers already have their own orchestration instructions. Upon receiving a CI contribution a 
+slave-agent will use its Docker client to \textit{build}, \textit{run} and then \textit{remove} the respective test container.
+To utilise resources more effectively we would also like the slave-agent containers themselves to be orchestrated and ephemeral. 
+A community plugin\footnote{\href{https://wiki.jenkins-ci.org/display/JENKINS/Docker+Plugin}{https://wiki.jenkins-ci.org/display/JENKINS/\\Docker+Plugin}} exists 
+for Jenkins which allows for slave containers to be orchestrated per CI contribution received. Upon the respective 
+build job finishing it will then remove the that slave container. Notably, this approach lends itself somewhat better to
+the model of container cluster management, orchestrating containers over any ahead-of-time provisioning and configuration.
+Nevertheless, this plugin has no scheduling capabilities. Such is unsurprising considering that viewing host resource consumption 
+is a privileged action. Since the Jenkins system runs as containers it cannot look outward and introspect the host.
 
-%\begin{minted}[
-%    frame=single
-%  ]{bash}
-%docker build -t test-app . \
-% && docker run tests-app
-%\end{minted}
-
-
-%The container image, created and leveraged by Docker, 
-%is a manifest container defines how to create and run image. 
-%
-%An image is a filesystem and parameters to use at runtime. It doesn?t have state and never changes. A container is a running instance of an imag
-%
-%
-%Another important Docker feature is the manner in which
-%filesystems for the isolated processes are managed. On bootstrapping,
-%each container has its own replica of a root filesystem
-%defined by a Docker image. Harnessing layered and versioning
-%copy-on-write filesystems (AuFS or btrfs), changed
-%parts of the filesystem (diffs) are stored alongside a copy of
-%the corresponding filesystem parts before destructive operations,
-%allowing to restore any filesystem state during the
-%lifecycle of a container and to trace the history of write operations.
-%
-%
-%%As previously highlighted, one challenged faced in implementing a robust
-%%CI system is facilitating for the automated provisioning of build 
-%%execution environments. Given a host machine running Docker engine (the server
-%%daemon allowing clients manage containers), one can simply build an 
-%%implementation of 
-%
-%
-%
-%Each of these states of the filesystem can be tagged
-%and reused as a new image, allowing new containers to start
-%their lifecycle with that exact filesystem state.
-%In addition to the aforementioned prototypical filesystem
-%tree, a Docker image groups information about which root
-%process resp. entry point to invoke, potentially required adjustment
-%to the execution environment of the process (i. e.
-%the working directory and environment variables) and which
-%resource limits must be respected. The preferred way to create
-%an image is def ining aforementioned details in a Dockerfile5
-%. This Dockerile also allows to declare process invocations
-%and to add additional iles to the base image to adjust
-%aspects of the coniguration in the base image. Dockeriles
-%also have the advantage of an even more transparent formal
-%description of steps to obtain a desired initial coniguration
-%environment for processes to be run in containers.
-%With volumes Docker provides the possibility to mount
-%directories of the host ilesystem or other containers into
-%the ilesystem of a container6
-%, exempt from the versioning
-%by the copy-on-write ilesystem in favour of increased I/O
-%performance. Each container receives its own virtual network
-%interface, allowing it to connect to other nodes on the
-%internal virtual network and to the Internet through a host
-%bridge. With the EXPOSE keyword a container can select
-%which ports are available to the host system. To provide
-%services via network connections from within a container
-%to other containers, Docker ofers a linking mechanism7
-%.
-%Using links, stable host names and ports can be achieved
-%for inter-container network communication, further environment
-%variables from upstream containers are made available
-%as well. It provides a simple but efective way to interchange
-%small pieces of information required for successful orchestration.
-%Container-based operating system virtualisation has the
-%advantage of keeping all dependencies necessary to run an
-%application together while major parts (hardware and operating
-%system kernel) are shared between instances. We
-%expect that the main technical setup for users of this project
-%will be commodity hardware with moderate performance
-%characteristics. In such a context, the desired orchestration
-%of numerous micro services in isolated environments
-%with a complete full- or para-virtualised system for each service
-%would be prohibitively taxing on limited computation
-%power
-
-\subsection{Container Cluster Management}
-To-do, introduction to tie in CI and Docker. To-do, reference pains of provisioning CI 'production-like' clusters. Practitioners and industry experts note that cluster management tooling supporting Docker
+\subsection{Cluster Management: Kubernetes}
+Container cluster management frameworks transparently govern the
+scheduling, orchestration and isolation of containers \citep{Rensin}. 
+Such frameworks allow one ``view a set of hosts as a 
+unified programmable reliable cluster" \citep{goasguen}, and generally all cluster nodes
+will use a shared Docker daemon. We continue our evaluation by
+considering how the integration of such tools might deliver a more optimal multi-host
+Jenkins CI system.
+\par
+Practitioners and industry experts note that the cluster management tools supporting Docker
 vary greatly in terms of capability, architecture and target cluster proportion
-\citep{goasguen, holla}. This is unsurprising when we consider that all infrastructures 
-are not subject to same orchestration requirements and software release cycles.
-For instance, slow moving infrastructures can be characterised as having infrequent application deployments,
- hard-coded service configurations and rare service failures which may not have an urgent impact. In contrast, more fast moving infrastructures feature continuous deployments and strong automation in terms of service configuration and recovery. 
+\citep{goasguen, holla}. Swarm is the native cluster management solution for 
+Docker, and is comparatively lighter-weight than other tools in this space \citep{holla}.
+For instance, by default Swarm is actually not distributed or highly available. 
+Through configuring a supported discovery backend, such
+as Consul or ZooKeeper, Swarm nodes can then be added to 
+the cluster and a fail-over master node can be then provisioned and configured.
+\par
+Standalone Swarm may be a fitting clustering solution for some use-cases, however supporting
+cluster sizes from a hundred to thousands of nodes requires a more production-grade 
+cluster platform such as Apache Mesos or Kubernetes. 
+The former is foremost a ``data center resource allocation system" with an 
+interchangeable interface for accessing and scheduling cluster resources. 
+The later is a higher-level platform specifically 
+designed for managing containerised applications across multiple hosts including programmable mechanisms for container orchestration, scaling and monitoring  \citep{goasguen}.
+Thus, we discount Swarm and Mesos from our evaluation and consider distributed
+Jenkins CI in conjunction with Kubernetes. 
+\par
+Kubernetes (k8s) is a production-grade container management 
+system that was originally built, and subsequently open-sourced, by Google.
+It builds upon a decade of lessons learned from the design and use of Borg, 
+an internal tool that manages virtually all of Google's cluster workloads \citep{Rensin}.
+As illustrated in figure~\ref{fig:jenkins-3}, we have implemented a distributed
+Jenkins CI system which supports full-containerised builds using 
+our sibling build container approach. Before we evaluate the effectiveness
+of this CI system let us first detail the underlying Kubernetes cluster architecture
+and its primary components.
+\begin{figure}[htp]
+      \centering
+      \includegraphics[width=8.75cm,height=6.2cm]{jenkins-3}
+      \caption{Distributed Jenkins under Kuberentes} 
+      \label{fig:jenkins-3}
+\end{figure}
+\par
+The k8s master node serves as the kernel of the cluster.
+Its runs administrative and regulatory services as containers 
+such as ones for: cluster-user admin control (policy-controller); cluster network 
+management (Flannel and kube-proxy); 
+container scheduling (kube-scheduler); an API for cluster object manipulation (kube-apiserver);
+grouped container management  (kube-controller-manager); and a cluster UI \citep{Verma}. 
+Worker nodes must be provisioned with some
+agent-containers which communicate back to those service containers
+on the master node. The most notable of such required agents is the kubelet daemon,
+which is primarily responsible for responding ``to commands from the master
+to create, destroy, and monitor the containers on that host".
+\par
+Under a bare Docker setup, the expressions for inter-container relationships, 
+container port-forwarding rules and
+container volume mounts are only definable as arguments as to the Docker \textit{run}
+API. In k8s, Pods are the base mechanism for expressing these configurations and running one or containers.
+They act as a ``resource envelope for one or more containers that are always
+scheduled onto the same machine and can share resources" \citep{Verma}.
+In terms of deploying long-running containers, pods may not be the appropriate
+k8s object of choice. Due possible changes in the overall cluster health 
+``the master scheduler may choose to evict a pod from its host" and
+spin up a new instance on another node \citep{Rensin}. Higher-level k8s objects 
+such as deployments and replication controllers should be for favoured when
+maintaining the state of long-running pods.
+\par
+Revisiting our evaluation, we orchestrate and manage
+our \textit{jenkins-master} pod via a deployment object. This allows us provide
+declarative updates to the running pod such as changing the version of Jenkins master image used or
+allocating more memory its container. Via the Jenkins UI we then configure the Jenkins k8s plugin\footnote{\href{https://wiki.jenkins-ci.org/display/JENKINS/Kubernetes+Plugin}{https://wiki.jenkins-ci.org/display/JENKINS/\\Kubernetes+Plugin}}
+to use our custom slave image when dynamically creating \textit{jenkis-slave} pods. 
+This means that the respective build execution envoirnments for slave pods will be in the form of sibling-containers. 
+\par
+Upon receiving CI contributions Jenkins will request a \textit{jenkis-slave} pod from the k8s API via HTTP. 
+Thus, in conjunction kubelet with the k8s master will schedule that slave pod where most appropriate. 
+With respect to our previously evaluated solutions this affords much greater resource utilisation as 
+slave container orchestration and scheduling concerns are managed fully by k8s.
+Notwithstanding these gains this approach is inherently flawed.
+This is principally because k8s ``schedules and
+orchestrates things at the pod level, not the container level" \citep{Rensin}. Our
+slave pods simply use the native
+Docker API to build and run their corresponding sibling-build on that host. 
+Most importantly, this means that these containers are not actually scheduled or managed
+by k8s.
 
-\subsubsection{Service orchestration}
-Central to cloud cluster management is the ability to elastically provision and tear down clusters. Many cloud providers have introduced their own service orchestration tools such as CloudFormation from AWS and Heat by OpenStack \citep{Dudouet}. 
-On a high-level, these tools simply define a cluster template which can be later orchestrated with possibly extended configurations. As previously mentioned, the native Docker orchestration tools support similar features that can clusterise multi-host containers. Docker Compose conceptually defines a similar template to that of Amazon's CloudFormation and allows one to perform orchestration tasks such as provisioning, destroying and scaling on per container basis.
-\par
-\citet{Claus} describe container-based clusters as consisting of several hosts which are ``virtual servers on hypervisors or possibly bare-metal servers", each of which typically runs several containers that are responsible for scheduling, load balancing and serving an application or service. Meaning containers can be distributed across one or more host machines wherein these hosts might be virtual servers running other services that must also be orchestrated.
-\par
-Slow moving infrastructures may not be availing of their provider's orchestration tools as doing so is simply not required. Clusters themselves are manually defined once and the scaling of nodes can be introduced during deployments or at scheduled downtime. Nevertheless, Docker Compose supports this manual workflow. Conversely, fast moving infrastructures profit from their provider's orchestration tools, leveraging them to automate tasks around cluster management.\ As discussed previously, Swarm is a native Docker clustering tool for containers which pools Docker engines together into a single virtual host. In conjunction with Docker Compose, it facilitates for transparent orchestration across container clusters. \citep{holla}.
-\par
-Cluster management frameworks aim to abstract and automate service orchestration activities such as provisioning, scaling, task scheduling, resource utilisation management and failover recovery. Some cloud providers have implemented such frameworks which sit on top of Swarm. For example, Amazon's EC2 Container Service (ECS) is one that uses a shared-state scheduling model to execute tasks on containerised EC2 instances via containers. Each host instance has a preinstalled ECS agent which allows clusterised containers communicate together and with the ECS console. Consequently, via scheduled tasks, ECS clusters can be transparently and dynamically orchestrated.
-\par
-Stand-alone Swarm or ECS may be fitting orchestration solutions for fast moving infrastructures, however larger-scale clouds that host hundreds or thousands of containers require high-level cluster management platforms such as Apache Mesos and Kubernetes. The former abstracts ``distributed hardware resources into
-a single pool of resources" and can provide similar cluster management facilities to ECS when integrated with scheduling and service management tools such as Marathon. The later is a higher-level platform specifically designed for managing containerised applications across multiple hosts including mechanisms for service deployment, scaling and maintenance.
-
-\subsubsection{Service discovery and configuration}
-Service discovery and configuration management are central cluster management concepts in distributed systems and microservices-based architectures. Both of which are argued to overlap in nature. Service discovery can be described as an approach to achieve ``dynamic and automatic software system composition, configuration and adaptation" \citep{Yang}. Generally, service discovery implementations accomplish this by allowing application components/services discover information or configurations about their current and  neighbouring environments through a distributed key-value store.
-\par
-Whether operating under a fast or slow moving infrastructure, requiring a service discovery solution is generally related to having a service-orientated  architecture style. The more distributed a system becomes, the more regularly do services require information about their own and neighbouring environments. The tooling around service discovery ranges in terms of complexity and provided features. DNS (Domain Name Systems) is a well-known and commonly understood standard which allows us ``associate a name with the IP address of one or machines" where the name becomes an ``entry point to the IP address of the host running that service" \citep{Newman}. More advanced tools like Consul and Apache Zookeeper support both configuration management and service discovery. The former is designed specifically for service discovery and can use service health checking features to route traffic away from unhealthy nodes. The later is used for wider variety of cases such ``configuration management, synchronizing data between services, leader election, message queues and as a naming service" \citep{Newman}.
+\subsection{LibrumCI}
+We forward the implementation of a first-effort CI system that
+effectively supports fully-containerised CI workflows
+through leveraging the native features of cluster 
+management frameworks. Our evaluation of employing
+fully-containerised CI workflows with existing CI systems
+demonstrates the discordance in containerising applications originally architected for 
+VM-based environments. Containerising software
+requires ``thinking in terms of services instead
+of applications". Traditional CI systems such as Jenkins
+we not developed under these terms.
 \par 
-Container-based service discovery involves the ability to dynamically register and discover multi-host containers among their peers. \citet{holla} poses two techniques to accomplish discovery in Docker; integrating Swarm backend discovery tools or using default Docker features like names and links. Docker Swarm implements a hosted discovery service which uses generated tokens to discover cluster nodes. Being primarily concerned with orchestration, Swarm does not currently support dynamic service registration and configuration. However, to dynamically configure and manage the services in your containers one can use a discovery backend with Swarm such as Etcd, Consul or Zookeeper. 
+Consider the Jenkins master image, as a single UNIX process
+it is responsible for serving a front-end, user account management,
+system authentication, resource authorisation, build queuing, 
+serving an API for resource manipulation
+and so on. Most importantly, it persists all of its state internally on disk (in \textit{/var/lib/jenkins} by default).
+As this process is stateful Jenkins master cannot be horizontally scaled. Furthermore,
+this monolithic design prohibits the scaling of individual segments of the application. 
 \par
-As previously highlighted, Docker Compose provides a mechanism to link named containers on the same host. This is accomplished by ``inserting the first container's IP address in /etc/hosts when starting the second container". Importantly, the IP address of a container living on a different host ``is not known by the docker daemon running in the current host". The ambassador container pattern achieves cross-host container linking between provider and consumer containers by dynamically configuring network connections through respective intermediate ambassador containers \citep{holla}.
+Additionally, our evaluations have revealed that effectively
+applying fully-containerised CI workflows in such tools through 
+cluster management frameworks is challenging. Our approach
+of using Jenkins sibling-container-builds in k8s contravenes 
+and circumvents the intended use of the framework in how one is to 
+schedule containers and use node resources. To avail of 
+the k8s orchestration and scheduling features all
+CI builds must be executed in pod form. One might note that
+k8s only supports building and running images that have been pushed
+to a registry. Thus, on a Jenkins slave we cannot dynamically create 
+build pods based off the \textit{Dockerfile} of a given CI contribution.
+\begin{figure}[htp]
+      \centering
+      \includegraphics[width=8.75cm,height=8.2cm]{librum}
+      \caption{LibrumCI running concurrent CI builds} 
+      \label{fig:librum}
+\end{figure}
+\par
+These observations have been applied to the design of LibrumCI. As illustrated in figure~\ref{fig:librum}
+we have adopted a micro-service architecture to allow for the 
+scaling of individual components in the system. On a high-level
+the system is simply comprised three notable long-running services (Mongo, Githooks
+and Master) which coordinate together to dynamically schedule a build pipeline. A
+given pipeline can be comprised of up to three build-phases. Each of which
+occur sequentially in the form of an ephemeral, or ``sidecar", pod. All of the system services
+are as follows:
+\begin{itemize}  
+\item \textbf{Front-end web-service} is a single-page-application client of the LibrumCI Master API. It provides an interface for creating and configuring repositories, and for viewing repository build pipelines including their per build-phase log output.  
+\item \textbf{Mongo database service} persists 'Repo', 'Branch' and 'Build' entity documents that are utilised by the Githooks and Master web-services.
+\item \textbf{Githooks web-service} is responsible for listening to Github push events (contributions). Upon receiving a contribution from a preconfigured repository, it will persist the contribution data (commit SHA, branch name, etc.), create a new build record and then request that the given build be scheduled via the LibrumCI Master API.
+\item \textbf{Master web-service} serves the RESTful API for resources and includes a schedule endpoint for build entities. This endpoint uses the k8s API to sequentially schedule the build phase sidecar pods. Using the k8s API each of these running pods will be streamed, where the phase status and logs are captured and persisted for the end user.
+\item \textbf{Network File System server} permits the same persistent volume (/repos/) being handed off between build phase pods, allowing for multiple simultaneous writers to that volume. On one external disk all configured repository files are name-spaced under this /repos/ volume. Thus, our NFS server allows build phases concurrently attach to the volume to synchronise and read repository files.
+\item \textbf{git-sync sidecars} synchronise
+the repository belonging to the incoming contribution by fetching it from the given commit SHA into
+persistent file storage (/repos/).
+\item \textbf{image-sync sidecars} synchronise the respective image of the incoming contribution by building the \textit{Dockerfile} with Docker Engine, if this was successful
+the image (build artefact) is pushed to a registry. The registry address and password is preconfigured on the system-level.
+\item \textbf{test-runner sidecars} use the pushed image of the contribution to run the build tests. The command to run these tests is preconfigured on the repository-level.
+\end{itemize}
+%Jenkins and GoCD are designed to run, and communicate the status of, 
+%respective CI builds 
 
-\subsubsection{Kubernetes}
-To-do, mention project history. To-do, mention the cluster topology it forwards. To-do, feature run-down. To-do, mention some examples of applications of kubernetes as a build farm and/or in testing.
-\lipsum[1] 
+%A Kubernetes cluster does not manage a
+%fleet of applications. It manages a cluster of services. You might run
+%an application (often your web browser) that communicates with
+%these services, but the two concepts should not be confused.
+%A service running in a container managed by Kubernetes is
+%designed to do a very small number of discrete things. As you design
+%your overall system, you should keep that in mind. I?ve seen a lot of
+%well meaning websites fall over because they made their services do
+%too much. That stems from not keeping this distinction in mind
+%when they designed things.
+%If your services are small and of limited purpose, then they can
+%more easily be scheduled and re-arranged as your load demands.
+%Otherwise, the dependencies become too much to manage and
+%either your scale or your stability suffers.
+%At this point you might be thinking that things would be easier if
+%you just ran processes that need to talk to each other in the same
+%container.
+%You can do it, but I really wouldn?t. It?s a bad idea.
+%If you do, you undercut a lot of what Kubernetes has to offer. Specifically:
+%1. Management Transparency?If you are running more than
+%one process in a container, then you are responsible for monitoring
+%and managing the resources each uses. It is entirely possible
+%that one misbehaved process can starve the others within the
+%container, and it will be up to you to detect and fix that. On the
+%other hand, if you separate your logical units of work into separate
+%containers, Kubernetes can manage that for you, which will
+%make things easier to debug and fix.
+%2. Deployment and Maintenance?Individual containers can be
+%rebuilt and redeployed by you whenever you make a software
+%change. That decoupling of deployment dependencies will make
+%your development and testing faster. It also makes it super easy
+%to rollback in case there?s a problem.
+%3. Focus
 
-\section{Design and Evaluation}
-To-do, note the poor container/Docker in TravisCI and Jenkins support. To-do, describe LibrumCI system some detail (architecture, screenshots, etc). To-do, matrix of tool comparison.
-
-%Creating an automated process for deploying infrastructural changes from
-%version control is at the core of good change management. The most effective
-%way to do this is to require all changes to be made to your environments via a
-%central system. Use a testing environment to work out the change you want to
-%make, test it in a fresh, production-like staging environment, put it into configuration
-%management so that future rebuilds incorporate it, have it approved, and
-%then have the automated system roll out the change. Many organizations have
-%built their own solutions to this problem, but if you do not have one, you can
-%use a data center automation tool like Puppet, CfEngine, BladeLogic, Tivoli, or
-%HP Operations Center.
-%
-%
-%Puppet and CfEngine are two examples of tools that make it possible to manage
-%operating system configuration in an automated fashion. Using these tools, you
-%can declaratively define things such as which users should have access to your
-%boxes and what software should be installed. These definitions can be stored in
-%your version control system. Agents running on your systems regularly pull the
-%latest configuration and update the operating system and the software installed
-%on it. With systems like these, there is no reason to log into a box to make fixes:
-%All changes can be initiated through the version control system, so you have a
-%complete record of every change?when it was made and by whom.
-%Virtualization can also improve the efficiency of the environment management
-%process. Instead of creating a new environment from scratch using an automated
-%process, you can simply take a copy of each box in your environment and store
-%it as a baseline. Then it is trivial to create new environments?it can be done by
-%clicking a button. Virtualization has other benefits, such as the ability to consolidate
-%hardware and to standardize your hardware platform even if your
-%applications require heterogeneous environments.
-%
-%This chapter describes how to keep your application releasable at all times, despite
-%being under constant change. One of the key techniques for this is componentization
-%of larger applications, so we will treat componentization, including
-%building and managing large projects with multiple components, at length.
-%What is a component? This is a horribly overloaded term in software, so we
-%will try to make it as clear as possible what we mean by it. When we talk about
-%components, we mean a reasonably large-scale code structure within an application,
-%with a well-defined API, that could potentially be swapped out for another
-%implementation. A component-based software system is distinguished by the fact
-%that the codebase is divided into discrete pieces that provide behavior through
-%well-defined, limited interactions with other components.
-%The antithesis of a component-based system is a monolithic system with no
-%clear boundaries or separation of concerns between elements responsible for
-%different tasks. Monolithic systems typically have poor encapsulation, and tight
-%coupling between logically independent structures breaks the Law of Demeter.
-%The language and technology are unimportant?it has nothing to do with GUI
-%widgets in Visual Basic or Java. Some people call components ?modules.?
-% Employing a component-based design is often described as encouraging reuse
-%and good architectural properties such as loose coupling. This is true, but it also
-%has another important benefit: It is one of the most efficient ways for large teams
-%of developers to collaborate. In this chapter, we also describe how to create and
-%manage build systems for component-based applications.
-%If you work on a small project, you may be thinking of skipping this chapter
-%after reading the next section (which you should read regardless of the project
-%size). Many projects are fine with a single version control repository and a simple
-%deployment pipeline. However, many projects have evolved into an unmaintainable
-%morass of code because nobody made the decision to create discrete components
-%when it was cheap to do so. The point at which small projects change into
-%larger ones is fluid and will sneak up on you. Once a project passes a certain
-%threshold, it is very expensive to change the code in this way. Few project leaders
-%will have the audacity to ask their team to stop development for long enough to
-%rearchitect a large application into components.
-% 
-% 
-%ensure that your team can develop
-%as efficiently as possible, while keeping your application always in a releasable
-%state. As usual, the principle is to ensure that teams get fast feedback on the effect
-%of their changes on the production-readiness of the application. One strategy for
-%meeting this goal is to ensure every change is broken down into small, incremental
-%steps which are checked into mainline. Another is to break your application down
-%into components.
-%Dividing an application into a collection of loosely coupled, well-encapsulated,
-%collaborating components is not only good design. It allows for more efficient
-%collaboration and faster feedback when working on large systems. Until
-%your application gets sufficiently large, there is no need to build your components
-%individually?the simplest thing is to have a single pipeline that builds your whole
-%application at once as the first stage. If you concentrate on efficient commit builds
-%and fast unit testing, and implement build grids for acceptance testing, your
-%project can grow to a much larger degree that you might think possible. A team
-%of up to 20 people working full-time for a couple of years should not need to
-%create multiple build pipelines, although of course they should still separate their
-%application into components.
-%Once you exceed these limits, though, the use of components, dependencybased
-%build pipelines, and effective artifact management are the key to efficient
-%delivery and fast feedback. The beauty of the approach described in this chapter
-%is that it builds on the already beneficial practice of component-based design.
-%This approach avoids the use of complex branching strategies, which usually
-%leads to serious problems in integrating your application. However, it does depend
-%on having a well-designed application that is amenable to a componentized build.
-%Unfortunately, we have seen too many large applications that cannot be easily
-%componentized in this way. It is very hard to coax such an application into a
-%state where it can be easily modified and integrated. So, make sure that you are
-%using your technology?s toolchain effectively to write code that can be built as a
-%set of independent components once it gets large enough.
-
-%Some address this problem by defining techniques that
-%filter and prioritize the tests scheduled for execution such
-%that developers could get interesting results within acceptable
-%time also in the presence of resource shortage [1]. Others
-%instead leverage cloud platforms to access increasingly large
-%and elastic pools of computing resources to reduce the risk of
-%incurring in bottlenecks [2].
-%Current solutions mostly focus on improving the efficiency
-%of cloud-based continuous integration by automating repetitive
-%activities to setup and execute integration and system tests [3],
-%which account for the coordinated deployment of several
-%virtual machine instances and their configuration by installing
-%software components, restoring system state, and configuring
-%test drivers. As an example, system testing of a two-tiered
-%Web service requires at least the deployment of two virtual
-%machines, the installation of the application server code and
-%the business logic on the ?front-end? server, and the installation
-%of the database server and its content in the ?back-end? server.
-%This setup process repeats for all the instances that are
-%started by the tests; therefore, automated solutions have the
-%potential of speeding up the overall test execution. However,
-%blind automation in the cloud might result in surprisingly
-%high costs and long execution times that can easily overpass
-%the potential benefits of automation and jeopardize the use
-%of cloud-based continuous integration environments. In fact,
-%cloud providers charge the usage of any resource, including
-%network communications, and the set up of virtual machines
-%might involve the download of large amount of data and the
-%re-installation of software components whose costs accumulate
-%over test executions.(Poster)
-
-\lipsum[1] 
+%policy-rich, topology-aware, workload-specific function that significantly impacts availability, performance, and capacity. The scheduler needs to take into account individual and collective resource requirements, quality of service requirements, hardware/software/policy constraints, affinity and anti-affinity specifications, data locality, inter-workload interference, deadlines, and so on. Workload-specific requirements will be exposed through the API as necessary.
 
 \section{Conclusions}
-\lipsum[1-2] 
+Our evaluations of the applicability of containerisation with continuous integration systems reveals 
+particular shortcomings in the supports of fully-containerised continuous integration.
+With the exception of commercial offerings, many CI tools do not yet meaningfully 
+support containerised builds. This is particularly true when attempting to
+implement fully-containerised CI pipelines with standalone CI systems
+in distributed environment. 
+\par
+Due to the inherent differences between VM- and container-based virtualised,
+cluster management concerns shift from provisioning and configuration management
+to service orchestration and scheduling. This paradigm change becomes apparent 
+when attempting to apply traditional clustering techniques to a fully-containerised CI system.
+In evaluating the integration of Jenkins with Kubernetes we have found
+challenges and limitations in running fully-containerised builds. To leverage 
+container clustering frameworks such as Kubernetes we forwarded LibrumCI as part of this work.
+Unlike existing CI systems, which have been designed independently of containers and cluster frameworks,
+we explicitly architect LibrumCI to leverage the native capabilities of Kubernetes.
+
+
 
 \vspace{-7.5mm}
 \renewcommand{\refname}{\section{References}}
