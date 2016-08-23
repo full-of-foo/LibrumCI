@@ -25,23 +25,23 @@ Anthony Troy\\
 \maketitle
 
 \begin{abstract}
-Continuous integration practices seek to reduce software deployment lead time
-through ensuring that team members are frequently integrating work that is 
+Continuous Integration (CI) practices seek to reduce software deployment lead time
+by ensuring that team members are frequently integrating work that is 
 verified by automated builds and tests in production-like environments. 
 Effective continuous integration pipelines must be capable of automatically
-provisioning such environments for testing upon team members contributing any
-infrastructural or environmental changes. Similarly,
+provisioning such environments for testing upon team members contributing 
+changes to the environment or infrastructure. Similarly,
 robust continuous integration infrastructures must be capable of such
 automated provisioning to decrease build execution load. VM-based environments
-struggle to efficiently support such workflows due the challenges and limitations 
+struggle to efficiently support such workflows due to the challenges and limitations 
 around the automated provisioning and configuration management of virtual machines.
 \par
-We forward that leveraging container-based virtualisation can strongly reduce
-continuous these integration impedances through the lightweight and portable affordances of containers. We demonstrate
-that the alternative model of cluster management under containerisation offsets continuous
+We posit that leveraging container-based virtualisation can strongly reduce
+these continuous integration impedances through the inherent lightweight and portable nature of containers. 
+We demonstrate that the contrasting model of cluster management under containerisation offsets continuous
 integration bottlenecks by supporting thousands of concurrent build executions.
 Upon evaluating the application of fully-containerised CI workflows under existing CI systems 
-we consider the successes and short comings of these approaches in the design of a purpose-built container-native
+we consider the successes and shortcomings of these approaches in the design of a purpose-built container-native
 CI system. Subsequently, we contribute LibrumCI, a first-effort continuous integration system designed 
 to support expansive integration loads of container-based projects. 
 
@@ -50,13 +50,16 @@ to support expansive integration loads of container-based projects.
 \keywords{continuous integration; Kubernetes; Jenkins; Docker; Cluster Management Frameworks; VCS; Agile}
 
 \section{Introduction}
-With organisational structures diversifying to off-shore, insource and outsource
+While organisational structures continue to insource and off-shore
 development needs, software is increasingly being developed by fully- or 
-partially-distributed teams. The contributions from team members must, at a minimum, be first validated
+partially-distributed teams \citep{Sharma}. The contributions from 
+team members must, at a minimum, be validated
 under a test infrastructure that is automated and robust enough to allow for
 high levels of code churn. This development requirement is reflected in 
-in the sustained and growing adoption of continuous integration (CI) practices in open-source and enterprise software projects \citep{Duvall, Fitz, Vas}. Traditionally most software projects have been characterised as having
-poor integration practices. More often than often not a siloed team 
+in the sustained and growing adoption of continuous integration (CI) 
+practices in open-source and enterprise software projects \citep{Fitz, Vas}. 
+Traditionally most software projects have been characterised as having
+poor integration practices \citep{Duvall}. More often than often not a siloed team 
 will conduct all development activities, arguably over a lengthy period,
 and defer acceptance testing and code integration. Importantly, during
 this period one can assert that the software is in an inoperative state, as there has
@@ -67,17 +70,19 @@ production-like environment.
 the end of development to allow the development team time to get the branches
 merged and the application working so it can be acceptance-tested". More concerning
 is that when some projects arrive at this point ``their software is not fit for
-purpose". These long-winded and challenging phases, commonly referred
-to as ``integration hell", pose difficulties for the engineers working through the integration
-and too for the leads and managers estimating the project delivery.
+purpose" \citep{Jez}. These long-winded and challenging phases, commonly referred
+to as ``integration hell" \citet{Jez}, pose difficulties both for the engineers working through the integration
+and for the leads and managers estimating the project delivery.
 Applications of continuous integration practices have been found to effectively 
 remove these phases at source \citep{Vas, Fitz, Jez, Duvall}. As a practice, CI seeks to reduce software deployment lead time by
 facilitating frequent code churn through verifying contributions with automated 
-builds and tests on production-like environments. \citet{Jez} advise that a team member integrate their work at least once daily, an effective undertaking of this process will mean that the software is always in a working state. 
+builds and tests on production-like environments. \citet{Jez} recommend
+that a team member integrate their work at least once daily;
+undertaking this process will mean that the software is always in a working state. 
 \par
 Effectively implementing a CI process first requires an extensive configuration
 management strategy and versioning approach wherein all sources
-and configurations are managed and tracked under version control. Thereafter,
+and configurations are tracked under version control. Thereafter,
 the processes of provisioning, environment configuration, building, testing and code integration
 can all be automated. Given that continuous integration environments involve
 teams sharing remote resources, workflows can easily 
@@ -85,77 +90,75 @@ be impeded as integration demand increases. Integrations can be similarly
 hampered as the complexity and configuration of the software changes.
 In practice many CI pipelines consists of two types execution environments:
 production-like (staging) environments for acceptance and system testing; and minimal 
-environments for unit and functional testing. 
+environments for unit and functional testing \citep{Guimaraes, Duvall}. 
 \par
-To not hinder CI workflows staging environments need to be automatically 
-reprovisioned and reconfigured to respect any environmental changes made by team members.
+To avoid hindering CI workflows, staging environments need to be automatically 
+reprovisioned and reconfigured to respect any changes to the environment made by team members.
 Doing so using VM-based virtualisation is generally quite cumbersome and expensive \citep{Gambi}.
-These constraints also proceed effectively supporting elastic continuous integration environments.
-We argue that leveraging container-based virtualisation can strongly reduce
-continuous integration impedances around environment provisioning and configuration
-through the lightweight and portable affordances of containers. Additionally, we demonstrate
-that the alternative model of cluster management under containerisation offsets continuous
-integration bottlenecks by supporting up to thousands of concurrent build executions.
-Upon evaluating the application of fully-containerised CI workflows under existing CI systems 
-we consider the successes and short comings of these approaches in the design of a purpose-built container-native
+These configuration and provisioning constraints also inhibit
+VM-based CI environments in elastically handling CI build loads. 
+In this paper we demonstrate that container-based virtualisation
+techniques inherently lessen the limitations of traditional VM-based CI environment
+provisioning and configuration. Furthermore, we posit that
+the orchestration- and scheduling-focused approaches of  
+container cluster management can reduce continuous
+integration bottlenecks by supporting thousands of concurrent build executions.
+We evaluate the application of fully-containerised CI workflows under existing CI systems 
+and reflect on the the successes and shortcomings of these approaches in the design of our purpose-built container-native
 CI system. Subsequently, we contribute LibrumCI, a first-effort continuous integration system designed 
 to support expansive integration loads of container-based projects. 
-%
-%This paper describes...high-level contribution
-%
-%The paper makes two contributions...exact contributions
-%
-%The next section presents foo. Section 3 bar. Section 4 baz.
-%Finally, Section 6 offers some concluding remarks.
 
 \section{Related Work}
 Early studies around container-based virtualisation techniques
 proceed with the proposal of resource containers \citep{Banga} and security
 jails \citep{Kamp}.  With Linux V-Server becoming the first notable system providing
-container virtualisation at operating system level, \citet{Soltesz} provides a comprehensive comparative 
+container virtualisation at operating system level.
+\citet{Soltesz} provides a comprehensive comparative 
 study on the qualitative benefits of containers. Some years later
 came research involving Docker-based containers and their inherent capability of effectively
-reproducing research environments \citep{Boettiger}, which is particularly identical to software provisioning 
+reproducing research environments \citep{Boettiger}, which is practically
+identical to software provisioning 
 and configuring management. Later performance-specific comparative studies were also conducted 
 using Docker \citep{Agarwal}.
 \par
 Subsequent works around containerised clouds note 
 the facets of clustering and managing distributed containers \citep{Claus, Verma}, container 
 cluster management frameworks are also highlighted. 
-Expectedly, over the last two years many books targeted at practitioners have also been  
+Unsurprisingly, over the last two years many books targeted at professionals
+have also been  
 published, highlighting the nuances and benefits of containerised cluster management
-\citep{db, holla, Rensin, Brewer}. No works yet exist around
+\citep{db, holla, Rensin, Brewer}. To our knowledge, no works yet exist around
 leveraging container-based virtualisation in continuous integration environments.  
 
 \section{Background}
 \subsection{Continuous Integration}
-Practices resembling continuous integration could be said
-to stem as far back as the original lean manufacturing method. 
-Nevertheless in software
-engineering the practice was codified by \citet{Beck} 
+Practices resembling Continuous Integration could be said
+to stem as far back as the original lean manufacturing method \citep{Fitz}. 
+In software engineering, the practice was codified by \citet{Beck} 
 as a core tenant of the Extreme Programming (XP) method.
-Following, CI was also included in the Agile Manifesto as an encouraged
-quality assurance practice. Amidst its wide adoption and popularity however, 
+Subsequently, the practice naturally became the foundation for Continuous
+Delivery; a process which extends CI activities to frequently deploy integration builds \citep{Jez}.
+Amidst its wide adoption and popularity however, 
 there is some variability in how teams are employing the practice, resulting 
 is some debate as to exactly which integration activities one should follow \citep{Stahl}.
-Nevertheless, at its core, CI forwards several central principles and high-level activities.
+Nevertheless, at its core, CI has several central principles and high-level activities.
 
 \subsubsection{CI Activities}
 Before implementing CI a process for a given project, all software source code
-and assets must be captured under a version control system (e.g. Git, SVN or Mercurial).
+and assets must be tracked under a version control system (e.g. Git, SVN or Mercurial).
 Such a system manages file changes using a controlled access repository. Importantly,
 this provides the mechanism for developers to persist and maintain a mainline branch of the working software 
-(e.g. the head or trunk branch), this is where any desired contributions are to be frequently 
+(known as the \textit{head} or \textit{trunk} branch). This is where any desired contributions are regularly 
 integrated/merged \citep{Vas}. Version control systems also support reverting back to
 previous revisions of the software, which is commonly availed of in CI. 
 \par
 Central to CI is the mechanism in which integrations are built, tested and fed back to the team. 
 More often than not an automated CI system will manage these tasks. Today existing systems
-are available as either hosted services or standalone setups \citep{Gous}, and there are
+are available as either hosted services or standalone setups \citep{Gous}, and there is
 a multitude of such offerings in both the open-source and commercial spaces. 
-The most notable of which are Jenkins, TravisCI, CruiseControl, CircleCI and Bamboo. 
+The most notable of these are Jenkins, TravisCI, CruiseControl, CircleCI and Bamboo. 
 As we will later explore, these systems offer varying approaches to how one configures and
-defines a build pipeline, nevertheless on an integration build machine or cluster the following workflow generally occurs:
+defines a build pipeline. Nevertheless, as \citet{Duvall} describes, on an integration build machine or cluster the following workflow generally occurs:
 \begin{itemize}  
 \item the CI server will poll, or listen to, contributions 
 made against the version control repository.
@@ -163,26 +166,26 @@ made against the version control repository.
 server will retrieve the source files and subsequently run build and tests scripts. 
 \item the following build results are most commonly made available through a web interface and possibly
 email.
-\item the built application package, such as a WAR or EXE file, is also made available \citep{Stahl}.
+\item the built application package, such as a WAR or EXE file, is also made available.
 \end{itemize}
 \par
 Continuously integrating reduces software project risk through 
-the preventative deciton of defects by in turn reducing quality 
+the preventative detection of defects in turn reducing quality 
 assumptions, and by eliminating manual repetitive integration
 processes ``time, costs and effort" can be saved \citep{Vas}.
-CI also affords the software being in a deployable state at any time \citep{Jez}.
-Indeed, as a process CI is quite arguably beneficial, nevertheless challenges 
+CI also ensures that the software is in a deployable state at any time \citep{Jez}.
+While as a process CI is arguably beneficial, challenges 
 do exist around implementing a robust CI system 
 and encompassing process.
 
 \subsubsection{CI Challenges}
-Employing an effective configuration management strategy is perhaps one of the
+Devising an effective configuration management strategy is perhaps one of the
 most challenging aspects of CI. It involves ensuring that every application-level configuration
-needed per build phase (e.g. build, deploy and test) is captured and managed under one's
-version control system. The same is required for the configurations around one's entire
-production infrastructure, from the patch-level of an operating system (OS)
+needed per build phase (that is, build, deploy and test) is captured and managed under by the
+version control system. The same is required for the configurations around of the entire
+production infrastructure, from the version of the operating system (OS)
 to the configuration files of databases and load-balancers. Furthermore, all of 
-the dependencies between artefacts should also be expressed. \cite{Jez}
+the dependencies between artefacts must also be defined. \cite{Jez}
 define this as ``the process by which all artefacts relevant to
 your project, and the relationships between them, are stored, retrieved, uniquely
 identified, and modified". Codifying the entire state of an infrastructure in
@@ -193,34 +196,35 @@ managing all infrastructure". This involves the ``desired state", or current con
 one's infrastructure being tracked under version control. A major benefit of keeping
 absolutely everything in version control is that source 
 changes made at any level will trigger a CI build, which is in turn integrated, tested and deployable. 
-That includes DBAs updating SQL scripts and operations members changing firewall 
+This includes DBAs updating SQL scripts and system administrators changing firewall 
 rules. However, supporting this requires implementing automated infrastructure provisioning.
-For instance, bumping the OS version which serves the application software
+For instance, updating the OS version which serves the application software
 must trigger a CI build, but first this must cause 
 the OS to be re-provisioned on the CI server and the rest of the downward dependencies 
-to be rebuilt (e.g. OS libraries, middleware, application build script).  Tools like Chef, Puppet 
-and Ansible are established automation tools in this space however, as we will later discuss, 
-we argue that such heavyweight solutions are less well placed in modern CI practices.
+to be rebuilt (e.g. OS libraries, middleware, application build scripts).  Tools like Chef, Puppet 
+and Ansible are established automation tools in this space however \citep{Rensin}, as we will later discuss, 
+we argue that such heavyweight solutions are less well placed in modern CI setups.
 \par
-True for both hosted services and standalone setups, powerful servers or build farms usually 
+In both hosted services and standalone setups, powerful servers or build farms usually 
 underly a CI system to ensure that build-times are as a quick as possible \citep{Campos}. As a consequence,
 these shared remote resources ``become a bottleneck when the number
 of developers increases" as more concurrent builds can occur \citep{Gambi}. Several practices have
 been adopted to alleviate these limitations. One addresses this horizontally through the ``componentisation of larger
 applications", wherein a codebase is divided into well-defined parts that are developed 
-and integrated separately. Thus, resulting in separate CI builds for each component \citep{Jez}.
-Other approaches emphasise on test selection. For instance, those tests related to the changes made in a given contribution
-are ran first (``pre-submit"), and if successful the integration is made, then the remaining tests are executed (``post-submit") and if a failure occurs the integration is rolled back \citep{Elbaum}.
+and integrated separately. This results in separate CI builds for each component \citep{Jez}.
+Other approaches emphasise test selection. For instance, those tests related to the changes made in a given contribution
+are run first (``pre-submit"), and if successful the integration is made. Then the remaining tests are executed (``post-submit") and if a failure occurs the integration is rolled back \citep{Elbaum}.
 
 
 \subsubsection{CI in Practice}
 Industry studies have found that 57\% of companies are employing
-CI on a daily or weekly basis\footnote{\href{http://info.thoughtworks.com/rs/thoughtworks2/images/Continuous\%20Delivery\%20_\%20A\%20Maturity\%20Assessment\%20ModelFINAL.pdf}{http://info.thoughtworks.com/rs/thoughtworks2/images/\\Continuous\%20Delivery\%20_\%20A\%20\\Maturity\%20Assessment\%20ModelFINAL.pdf}}, however there is a clear disparity in how those
-practitioners are actually implementing the process. \citet{Stahl} have revealed that there are several disagreements in the existing research around how CI is actually practiced in industry. 
+CI on a daily or weekly basis \citep{Forrester}. However there is a clear disparity in how those
+practitioners are actually implementing the process. \citet{Stahl} have 
+discovered that there are several disagreements in the existing research around how CI is actually practiced in industry. 
 \par
 CI has also become a well adopted practice in open-source projects,
-particularly for those projects (75\%) hosted on GitHub. Those surveyed 
-integrators have been found to use ``few quality evaluation tools other than
+particularly for those projects (75\%) hosted on GitHub \citep{Gous}. Those integrators surveyed 
+have been found to use ``few quality evaluation tools other than
 continuous integration" in their integration workflows \citep{Gous}. 
 In the case of GitHub hosted projects, 
 TravisCI is currently the most popular tool \citep{Yu}. Similar to many other
@@ -228,97 +232,78 @@ modern hosted CI solutions, a repository is primarily configured
 with the system through a repository-level YAML file that declares the entire build workflow  \citep{Santos}.
 This file includes the infrastructural configuration (e.g. host OS type, host OS version, middleware dependancies), the application-level configuration, and finally the build and test scripts to be ran. The following \texttt{.travis-ci.yml} file is quite
 similar to that used on the Ruby on Rails project:
+
 \begin{minted}[
     frame=single
   ]{yaml}
-# use a Linux image with Ruby pre-installed
+# use supported Linux execution environment
 os: linux 
-language: ruby
-sudo: false
-
+#		     ....
 cache:
-  bundler: true
   directories:
     - # between builds cache installed `bundler' 
     - # packages (gems) and any other directories
 before_install:
-  - # before starting services and add-ons fetch
-  - # and configure other system and/or 
-  - # middleware dependancies
-# ensure services are running and available 
-# over the network
-services:
-  - memcached
-  - redis
-  - rabbitmq
-addons: # use beta services
-  postgresql: ``9.4"
-before_script:
-  - # before running tests run some commands 
-  - # like (re)configuring the application
+- # fetch and configure system and/or
+- # middleware dependancies
 script: 
   - ci/run_tests.rb # test script to run
   - ci/run_inter.rb # integration script to run
-# use each Ruby versions against the test script
-rvm:
-- 2.2.5
-- ruby-head
-# run the test script again under each specified 
-# environment variable 
-env:
-  matrix:
-    - `SOME_FLAG=0'
-    - `SOME_FLAG=1'
-notifications:
-  - # send builds statuses to IRC
   \end{minted}
 \par
-Upon receiving a contribution, such a service will provision
+Upon receiving a contribution, the service will provision
 and build a virtual environment based on the repository's CI configuration
-file, cache those whitelisted directories for subsequent builds, then and run any
-specified scripts or commands (which are generally for testing and integrating).
-Most services offer a web interface wherein build statuses and be observed, and 
-integrations with other tools for notifying build statuses. As you would expect,
+file. The specified \textit{os} indicates the desired virtual operating system 
+to use (Ubuntu 12.04 in this case). Once operating system is provisioned
+Travis will fetch the repository source code belonging to the respective contribution
+and place it in the current working directory. The subsequent \textit{before\_install}
+block allows for commands to be executed before tests are ran. This allows system
+ and middleware dependencies be fetched, installed and configured. The \textit{script} block
+ lists executable files which will run unit, functional and integration tests. Once
+ these scripts terminate the virtual environment is destroyed. However, 
+ the \textit{cache.directories} block can be leveraged to whitelist directories 
+ that will survive between subsequent builds. Finally, Travis offers a web interface for monitoring build statuses, and 
+integrations with other tools for publishing build statuses. As you would expect,
 a build failure occurs when a provisioning-, test- or integration-related command
 terminates unsuccessfully. 
 \par
-In theory, for most commercial software projects it is impossible to
-employ a mature CI process under such tools. The execution environments offered by such services are generally limiting. 
-For instance, TravisCI supports  only three virtual environments for build execution: Ubuntu 12.04,
-OS X Mavericks and Ubuntu 14.04. CI under these constraints may be
+For commercial software projects, it can be difficult to employ a mature CI process using these tools.
+The execution environments offered by such services are generally limiting. 
+For instance, TravisCI only supports three virtual environments for build execution: Ubuntu 12.04,
+OS 10.9 and Ubuntu 14.04. CI under these constraints may be
 adequate for software projects that only rely on unit- and functional- level
 testing. However, as we will later explore, more complex ``n-tierd" applications require build pipelines that 
 include acceptance testing on an environment akin to production. 
 \par
 Standalone setup CI systems offer greater flexibility around build 
-execution environments. \citet{Duvall} forwards several tools such
+execution environments as the entire system
+is provisioned and managed within the software organisation. 
+\citet{Duvall} mentions several tools such
 as CruiseControl, Apache Continuum, IBM's UrbanCode Deploy and Draco.NET 
-as potential standalone solutions. In Jenkins, also a popular open-source contender in this space, 
-one can define build pipelines comprised of one or more phases, and each of which can be executed on a different  
+as potential standalone examples. In Jenkins, also a popular open-source contender in this space, 
+one can define build pipelines comprised of one or more phases, each of which can be executed on a different  
 execution environment \citep{Smart}. For instance, one might manually provision and configure a 
-minimal compute environment for unit- and functional-level testing and a more production-like 
-one for acceptance testing. Having installed and configured Jenkins on those machines, one could then
-configure the given repository and define the pipeline via the Jenkins UI.
-Tools such as Jenkins can also be extended to leverage cloud features. For instance,
-the Amazon EC2 Plugin, Azure Slave Plugin allow one to dynamically
-provision compute resources in a distributed master/slave Jenkins setup \citep{Smart}.
+minimal environment for unit- and functional-level testing and a more production-like 
+one for acceptance testing. Many tools can also be extended to leverage cloud features. For instance,
+the Amazon EC2 Plugin, Azure Slave Plugin allow compute resources to be provisioned dynamically
+ in a distributed master/slave Jenkins setup \citep{Smart}.
 
 \subsection{Containerisation}
 Selecting appropriate automation tools
 generally comes down to what is ``best fit for your
-environment and development process". \citet{Duvall}
-argues that this includes the functionality, reliability, longevity and 
+environment and development process" \citep{Duvall}. 
+\citet{Duvall} argues that this includes the functionality, reliability, longevity and 
 usability of the given tool. All too often these
 evaluations ``often transcend the practical and 
-escalate into what sounds like a religious debate". 
+escalate into what sounds like a religious debate" \citet{Duvall}. 
 As we will subsequently explore, recently established 
 standards and technologies in containerisation 
 afford significant opportunities to CI.
 
 \subsubsection{Establishing the Container Standard}
-Containerisation is a recently resurged computing paradigm that is
+Containerisation is a recently resurgent computing paradigm that is
 having a significant impact on how applications are being built,
-shipped and ran. Along with being less resource intensive and
+shipped and run. As well as less resource intensive and
 more portable, containers simplify dependency management, application
 versioning and service scaling, as opposed to deploying
 applications or application components directly onto a host operating
@@ -327,50 +312,51 @@ established a container standard.
 \par
 Containers have a long history in computing though much of their recent popularity 
 surround the recent developments of both LXC and the Docker platform. 
-The former can be described as a container execution environment,
-or more formally, a Linux user space interface to 
+The former is a container execution environment,
+or more formally, a Linux userspace interface to 
 access new kernel capabilities of achieving process isolation through namespaces
-and cgroups \citep{Claus}. The latter is an open-source suite of tools managed by Docker Inc.\ which
-extends upon container technology such as LXC, in turn 
+and cgroups \citep{Claus}. The latter is an open-source toolkit managed by Docker Inc.\ which
+builds on container technology such as LXC, 
 allowing containers to behave like ``full-blown hosts in their own right" 
 whereby containers have ``strong isolation, their own network and storage stacks, as well 
 as resource management capabilities to allow friendly co-existence of multiple containers on a host" \citep{db}.
 \par 
-Uncertainties around Docker's maturity and production-readiness have been expressed \citep{Kereki, Powers, Merkel}, however 
-over the last two years the states of both Docker and the containerisation ecosystem continue to rapidly progress.\
-Last year Docker has seen an unprecedented increase in development, adoption and community uptake \citep{Merkel}. Most
-notably was the introduction of customisable container execution environments. This means as opposed to LXC one can
-``take advantage of the numerous isolation tools available" such as ``OpenVZ, systemd-nspawn, libvirt-sandbox, qemu/kvm, BSD Jails and Solaris Zones".
-Also included in this 0.9 release was the new built-in container execution driver ``libcontainer", which replaced LXC as the default driver.
+Uncertainties around Docker's maturity and production-readiness have been expressed \citep{Kereki, Powers, Merkel}.
+However, over the last two years the states of both Docker and the containerisation ecosystem continue to rapidly progress.\
+In 2014 Docker saw an unprecedented increase in development, adoption and community uptake \citep{Merkel}. Most
+notable was the introduction of customisable container execution environments. This means as opposed to LXC one can
+``take advantage of the numerous isolation tools available" such as ``OpenVZ, systemd-nspawn, libvirt-sandbox, qemu/kvm, BSD Jails and Solaris Zones"
+\citep{Hykes}.
+Also included in this 0.9 release was the new built-in container execution driver \textit{libcontainer}, which replaced LXC as the default driver.
 Going forward on all platforms Docker can now execute kernel features such as ``namespaces, control groups, capabilities, apparmor profiles, 
 network interfaces and firewalling rules" predictably ``without depending on LXC" as an external dependency \citep{Hykes}. 
 \par
 Interestingly, libcontainer itself was the first project to provide a standard interface for making containers and managing their lifecycle.\
-Subsequently the Docker CEO  announced the coming together of industry leaders and others in partnership with the Linux Foundation
+Subsequently Solomon Hykes, the Docker CEO, announced the coming together of industry leaders and others in partnership with the Linux Foundation
 to form a ``minimalist, non-profit, openly governed project" named The Open Container Initiative (OCI), with the purpose of defining 
 ``common specifications around container format and runtime" \citep{Golub}. 
-Thereafter Docker donated its base container format and runtime, libcontainer, to be maintained by the OCI. Docker Engine and Rocket (by CoreOS) are both
+Thereafter Docker donated its base container format and runtime, \textit{libcontainer}, to be maintained by the OCI. Docker Engine and Rocket (by CoreOS) are both
 container runtimes which adhere to these standards. 
 
 \subsubsection{Applicability of Containers in CI}
 In terms of the configuration and provisioning of execution environments, containers  
 offer a much a more lightweight and portable alternative to that of the traditional VM-based approach.
 Both approaches are ``virtualisation
-techniques, but solve different problems". A container-based ecosystem lends itself better 
+techniques, but solve different problems" \citep{Claus}. A container-based ecosystem lends itself better 
 towards the ``packaging, delivering and orchestrating" of execution environments, having
-a more PaaS focus. Whereas VMs emphasise more on ``hardware allocation and management",
+a more PaaS focus \citep{Claus}. Whereas VMs emphasise more on ``hardware allocation and management",
 having a more IaaS foucs \citep{Claus}. Consequently, both approaches bear
-``significant qualitative differences". Most notably, the ``start-up time of a full container is 6x lower than a
+``significant qualitative differences" \citep{Agarwal}. Most notably, the ``start-up time of a full container is 6x lower than a
 VM, and memory footprint is 11x lower than a VM" \citep{Agarwal}.
 \par
 With respect to VM-based environments, the container image standard established and implemented by Docker affords 
-further qualitative advantages, particularly around the area of configuring execution environments.   
+further advantages, particularly in the area of configuring execution environments.   
 For a given software application or component, Docker allows
-one codify most of all potential environmental configuration
-into one manifest or declaration, a \texttt{Dockerfile}. Apart from the
-hardware resource requirements of the application (cpu, memory and disk), 
-herein one can capture all system- and application- level configurations. Thus,
-from the perspective of a CI system, a  \texttt{Dockerfile} can
+one to consolidate environmental configuration
+into one manifest or declaration known as a \texttt{Dockerfile}. 
+Apart from the hardware resource requirements of the application (CPU, memory and disk), 
+herein one can capture all system- and application- level configurations. 
+From the perspective of a CI system, a  \texttt{Dockerfile} can
 act as an all encompassing build manifest. Consider that, 
 for unit and functional testing only, we require a build execution environment
 for a NodeJS application running on Ubuntu Xenial, where ``\texttt{runTests.sh *}" executes our test suites.
@@ -407,10 +393,10 @@ ENTRYPOINT ["/app/runTests.sh"]
 CMD ["*"]
 \end{minted}
 \par
-In terms of CI, perhaps one of the greatest benefits that is afforded here is 
+In terms of CI, perhaps one of the greatest benefits here is 
 Docker's distributed and opportunistic caching mechanism for builds.
 Firstly, it is important to note that a built container manifest, an \textit{image}, is just a stateless filesystem that acts
-as a parameter to a container runtime. Thus, a \textit{container} is an running instance of an \textit{image}.
+as a parameter to a container runtime. A \textit{container} is a running instance of an \textit{image}.
 An image begins with a replica of a root filesystem (defined in a \texttt{Dockerfile} with the \texttt{FROM} instruction).
 Following, through leveraging ``layered and versioning
 copy-on-write filesystems (AuFS or btrfs)", the termination of
