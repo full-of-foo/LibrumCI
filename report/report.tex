@@ -11,7 +11,7 @@
 
 \begin{document}
 
-\title{LibrumCI: Leveraging Cluster Management Framework Natives in Continuous Integration}
+\title{LibrumCI: Towards Fully-Containerised\\ Continuous Integration}
 
 \author{\IEEEauthorblockN{Anthony Troy\\}
 \IEEEauthorblockA{\small School of Computing,\\
@@ -197,7 +197,7 @@ your project, and the relationships between them, are stored, retrieved, uniquel
 identified, and modified". Codifying the entire state of an infrastructure in
 version control is certainly not trivial for most projects, particularly in legacy code bases.
 \par
-\citep{Jez} argue that a successful configuration strategy requires a ``holistic approach to 
+\citet{Jez} argue that a successful configuration strategy requires a ``holistic approach to 
 managing all infrastructure". This involves the ``desired state", or current configuration, of 
 one's infrastructure being tracked under version control. A major benefit of keeping
 absolutely everything in version control is that source 
@@ -296,7 +296,6 @@ minimal environment for unit- and functional-level testing and a more production
 one for acceptance testing. Many tools can also be extended to leverage cloud features. For instance,
 the Amazon EC2 Plugin, Azure Slave Plugin allow compute resources to be provisioned dynamically
  in a distributed master/slave Jenkins setup \citep{Smart}.
-% TODO what should we take from this
 
 \subsection{Containerisation}
 Selecting appropriate automation tools
@@ -416,7 +415,6 @@ if a host machine is building our example image for the first time, and has not 
 built  \texttt{ubuntu:16.04}, then all instructions in the file will be terminated and cached.
 If we are rebuilding the image, and have only modified the \texttt{config-test.conf} source, 
 the respective \texttt{COPY} layer for that source with all subsequent layers become invalidated and then rebuilt.
-%TODO what should we take from this
 
 \section{Evaluation and Design}
 We evaluate in detail some applications of containerisation with existing CI systems, and subsequently forward the design
@@ -475,6 +473,13 @@ EXPOSE 22
 # set the ssh public key shared with master
 ENV JENKINS_SLAVE_SSH_PUBKEY ssh-rsa abcd123
 \end{minted}	
+\begin{figure}[htp]
+      \centering
+      \includegraphics[width=8.6cm,height=5.3cm]{jenkins-1}
+      \caption{Single-host Distributed Jenkins with Nested Build Containers} 
+      \label{fig:jenkins-1}
+\end{figure}
+\par
 A typical container is not allowed to access any host devices,
 however as our slave containers run their own Docker daemons they will need to be permitted access. 
 This is achieved by running the slaves with a ``privileged" flag. Given we run \textit{n} slave instances
@@ -482,12 +487,6 @@ with this flag, we can then begin configuring repositories and pipelines via the
 Jenkins master UI. Notwithstanding the system only having the compute resources of a single machine, 
 we can see in figure~\ref{fig:jenkins-1} that there are some inefficiencies to this nested containerisation
 approach.
-\begin{figure}[htp]
-      \centering
-      \includegraphics[width=8.6cm,height=5.3cm]{jenkins-1}
-      \caption{Single-host Distributed Jenkins with Nested Build Containers} 
-      \label{fig:jenkins-1}
-\end{figure}
 \par
 The outer Docker daemon on the host machine will allow
 for layer-sharing between the master (jenkins-master) and the slave
@@ -504,11 +503,6 @@ against the default daemon process which lives as a UNIX domain socket
 shortcomings of our current approach by sharing this socket with the
 slave containers. The builds they create via the Docker client in turn
 become sibling containers that avail of the same cache.
-It is important to note that this is not a thorough solution,
-the daemon itself is a highly privileged process on the host machine.
-Sharing it with other processes has security implications.
-Notwithstanding this, in our slave image we instead install the standard
-Docker Engine to use the client API commands within CI builds.
 \begin{minted}[
     frame=single,
     fontsize=\small
@@ -535,8 +529,13 @@ RUN set -ex\
       \caption{Single-host Distributed Jenkins with Sibling Build Containers} 
       \label{fig:jenkins-2}
 \end{figure}
-%TODO what should we take from this
-
+Thus, our sibling build container approach allows for effective containerised CI with Jenkins on a single host
+as all system and build containers share image layers. 
+However, It is important to note that this is not a thorough solution,
+the daemon itself is a highly privileged process on the host machine.
+Sharing it with other processes has security implications.
+Notwithstanding this, in our slave image we instead install the standard
+Docker Engine to use the client API commands within CI builds.
 
 \subsection{Fully-Containerised Multi-Host Jenkins}
 Compared to a VM-based approach, containers are inherently superior at scale.
@@ -570,12 +569,12 @@ slave-agent will use its Docker client to \textit{build}, \textit{run} and then 
 To utilise resources more effectively we would also like the slave-agent containers themselves to be orchestrated and ephemeral. 
 A community plugin\footnote{\href{https://wiki.jenkins-ci.org/display/JENKINS/Docker+Plugin}{https://wiki.jenkins-ci.org/display/JENKINS/\\Docker+Plugin}} exists 
 for Jenkins which allows for slave containers to be orchestrated per CI contribution received. Upon the respective 
-build job finishing it will then remove the that slave container. Notably, this approach lends itself somewhat better to
-the model of container cluster management, orchestrating containers over any ahead-of-time provisioning and configuration.
-Nevertheless, this plugin has no scheduling capabilities. Such is unsurprising considering that viewing host resource consumption 
+build job finishing it will then remove the that slave container. 
+Unfortunately, this plugin has no scheduling capabilities. In a round-robin fashion, containers are scheduled to run on host
+regardless of their capacity. Such is unsurprising considering that viewing host resource consumption 
 is a privileged action. Since the Jenkins system runs as containers it cannot look outward and introspect the host.
-
-%TODO - Summarise here: there is an approach that distributes, but it is dependent on an insecure patch, and does not map the load well across hosts.
+As demonstrated, we can implement full-containerised and distributed CI with Jenkins though our approaches so far do not map load well across hosts. To 
+effectively schedule load across a cluster of machines we must employ high-level tools in our CI system.  
 
 \subsection{Cluster Management: Kubernetes}
 Container cluster management frameworks transparently govern the
@@ -667,7 +666,7 @@ Most importantly, this means that these containers are not actually scheduled or
 by k8s.
 
 \subsection{LibrumCI}
-LibrumCI the implementation of a first-effort CI system that
+LibrumCI is the implementation of a first-effort CI system that
 effectively supports fully-containerised CI workflows
 through leveraging the native features of cluster 
 management frameworks. Our evaluation of employing
@@ -687,7 +686,7 @@ As this process is stateful Jenkins master cannot be horizontally scaled. Furthe
 this monolithic design prohibits the scaling of individual segments of the application. 
 \par
 Additionally, our evaluations have revealed that effectively
-applying fully-containerised CI workflows in such tools through 
+applying fully-containerised CI workflows with such tools through 
 cluster management frameworks is challenging. Our approach
 of using Jenkins sibling-container-builds in k8s contravenes 
 and circumvents the intended use of the framework in how one is to 
@@ -725,54 +724,14 @@ persistent file storage (/repos/).
 the image (build artefact) is pushed to a registry. The registry address and password is preconfigured on the system-level.
 \item \textbf{test-runner sidecars} use the pushed image of the contribution to run the build tests. The command to run these tests is preconfigured on the repository-level.
 \end{itemize}
- 
-% TODO - It would be useful to have a clear table showing the three systems and how they evaluate under your categories. It's a little unclear how you undertook your evaluation and%assessment at the moment.
-
-
-%Jenkins and GoCD are designed to run, and communicate the status of, 
-%respective CI builds 
-
-%A Kubernetes cluster does not manage a
-%fleet of applications. It manages a cluster of services. You might run
-%an application (often your web browser) that communicates with
-%these services, but the two concepts should not be confused.
-%A service running in a container managed by Kubernetes is
-%designed to do a very small number of discrete things. As you design
-%your overall system, you should keep that in mind. I?ve seen a lot of
-%well meaning websites fall over because they made their services do
-%too much. That stems from not keeping this distinction in mind
-%when they designed things.
-%If your services are small and of limited purpose, then they can
-%more easily be scheduled and re-arranged as your load demands.
-%Otherwise, the dependencies become too much to manage and
-%either your scale or your stability suffers.
-%At this point you might be thinking that things would be easier if
-%you just ran processes that need to talk to each other in the same
-%container.
-%You can do it, but I really wouldn?t. It?s a bad idea.
-%If you do, you undercut a lot of what Kubernetes has to offer. Specifically:
-%1. Management Transparency?If you are running more than
-%one process in a container, then you are responsible for monitoring
-%and managing the resources each uses. It is entirely possible
-%that one misbehaved process can starve the others within the
-%container, and it will be up to you to detect and fix that. On the
-%other hand, if you separate your logical units of work into separate
-%containers, Kubernetes can manage that for you, which will
-%make things easier to debug and fix.
-%2. Deployment and Maintenance?Individual containers can be
-%rebuilt and redeployed by you whenever you make a software
-%change. That decoupling of deployment dependencies will make
-%your development and testing faster. It also makes it super easy
-%to rollback in case there?s a problem.
-%3. Focus
 
 \section{Conclusions}
 Our evaluations of the applicability of containerisation with continuous integration systems reveals 
 particular shortcomings in the supports of fully-containerised continuous integration.
 With the exception of commercial offerings, many CI tools do not yet meaningfully 
 support containerised builds. This is particularly true when attempting to
-implement fully-containerised CI pipelines with standalone CI systems
-in distributed environment. 
+implement fully-containerised continuous integration with standalone CI systems
+in a distributed environment. 
 \par
 Due to the inherent differences between VM- and container-based virtualised,
 cluster management concerns shift from provisioning and configuration management
@@ -783,6 +742,7 @@ challenges and limitations in running fully-containerised builds. To leverage
 container clustering frameworks such as Kubernetes we forwarded LibrumCI as part of this work.
 Unlike existing CI systems, which have been designed independently of containers and cluster frameworks,
 we explicitly architect LibrumCI to leverage the native capabilities of Kubernetes.
+
 
 \bibliographystyle{IEEEtranN}
 \bibliography{IEEEabrv,report}
