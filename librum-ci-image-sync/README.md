@@ -1,5 +1,8 @@
-LibrumCI Image Sync
+LibrumCI Image Sync (Sidecar)
 ==========
+
+Synchronises the respective image of an incoming contribution by building the \textit{Dockerfile} with Docker Engine, if this was successful
+the image (build artefact) is pushed to a registry. The registry address and password is preconfigured on the system-level (see more [here](./../README.md)).
 
 ## Usage
 ```

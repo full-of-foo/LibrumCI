@@ -1,11 +1,15 @@
 LibrumCI
 =======
-TODO - detailed description
+
+A proof of concept CI system that
+effectively supports fully-containerised CI workflows
+through leveraging the native features of Cluster Management frameworks.
+
 
 ## Deployment
 LibrumCI currently supports running on top of a Kubernetes (k8s) cluster.
 
-As deploying a k8s cluster from scratch is not trivial, we advise you use Google Container Engine to do this heavy lifting for you. Its also [free](https://cloud.google.com/container-engine/pricing#pricing_for_cluster_management)!
+As deploying a k8s cluster from scratch is not trivial, we advise you use Google Container Engine (IaaS) to do this heavy lifting for you. Its also [free](https://cloud.google.com/container-engine/pricing#pricing_for_cluster_management)!
 
 ````
 # Create a k8s cluster (or use an existing one)

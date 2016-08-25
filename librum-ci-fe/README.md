@@ -1,6 +1,8 @@
 LibrumCI Frontend
 =============
 
+Single-page-application client of the LibrumCI Master API. It provides an interface for creating and configuring repositories, and for viewing repository build pipelines including their per build-phase log output
+
 ## Usage
 
 This service depends upon running librum-ci-master, librum-ci-githooks and mongo instances. All of which

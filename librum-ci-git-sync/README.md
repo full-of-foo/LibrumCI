@@ -1,5 +1,9 @@
-LibrumCI Git Sync
+LibrumCI Git Sync (Sidecar)
 =========
+
+Synchronises the repository belonging to an incoming contribution by fetching it from the given commit SHA into
+persistent file storage (/repos/).
+
 
 ```
 The Copyright for this forked software remains "AS IS".

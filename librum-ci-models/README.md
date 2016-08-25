@@ -1,6 +1,8 @@
 LibrumCI Models
 ==========
 
+Node package containing the ORM models for 'Repo', 'Branch' and 'Build' entity documents. Utilised by the Githooks and Master web-services.
+
 ## Usage
 ```
 # install the node package
