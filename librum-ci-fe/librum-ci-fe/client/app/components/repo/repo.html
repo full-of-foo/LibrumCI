@@ -35,8 +35,8 @@
         </h4>
       </div>
       <div class="row ml-0-pc">
-        <span class="crumb">Created: {{$ctrl.repo.createdAt | date:"dd/MM/yyyy h:mma"}}</span>
-        <span>Last Updated: {{$ctrl.repo.updatedAt | date:"dd/MM/yyyy h:mma"}}</span>
+        <span class="crumb">Created: {{build.createdAt | date:"dd/MM/yyyy h:mma"}}</span>
+        <span>Last Updated: {{build.updatedAt | date:"dd/MM/yyyy h:mma"}}</span>
       </div>
       <div class="row ml-0-pc">
         <span class="crumb">Branch: {{build.branch.slug.split('refs/heads/')[1]}}</span>

@@ -4,6 +4,7 @@ metadata:
   namespace: librum-ci
   labels:
     name: librum-ci-master
+    visualize: 'true'
   name: librum-ci-master-controller
 spec:
   replicas: 1

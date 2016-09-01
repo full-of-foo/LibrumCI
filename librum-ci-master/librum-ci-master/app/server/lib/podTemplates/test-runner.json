@@ -5,7 +5,8 @@
     "namespace": "librum-ci",
     "generateName": "test-runner-",
     "labels": {
-      "group": "test-runner"
+      "group": "test-runner",
+      "visualize": "true"
     }
   },
   "spec": {

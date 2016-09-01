@@ -4,6 +4,7 @@ metadata:
   namespace: librum-ci
   labels:
     name: librum-ci-githooks
+    visualize: 'true'
   name: librum-ci-githooks-controller
 spec:
   replicas: 1

@@ -3,6 +3,8 @@ kind: ReplicationController
 metadata:
   namespace: librum-ci
   name: nfs-server
+  labels:
+    visualize: 'true'
 spec:
   replicas: 1
   selector:

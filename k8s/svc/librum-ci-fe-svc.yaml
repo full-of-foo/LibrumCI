@@ -5,6 +5,7 @@ metadata:
   name: librum-ci-fe
   labels:
     name: librum-ci-fe
+    visualize: 'true'
 spec:
   type: LoadBalancer
   ports:

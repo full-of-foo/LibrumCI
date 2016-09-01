@@ -5,6 +5,7 @@ metadata:
   name: librum-ci-githooks
   labels:
     name: librum-ci-githooks
+    visualize: 'true'
 spec:
   type: LoadBalancer
   ports:

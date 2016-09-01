@@ -4,6 +4,7 @@ metadata:
   namespace: librum-ci
   labels:
     name: mongo
+    visualize: 'true'
   name: mongo-controller
 spec:
   replicas: 1

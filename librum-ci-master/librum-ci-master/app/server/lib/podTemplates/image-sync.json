@@ -5,7 +5,8 @@
     "namespace": "librum-ci",
     "generateName": "image-sync-",
     "labels": {
-      "group": "image-sync"
+      "group": "image-sync",
+      "visualize": "true"
     }
   },
   "spec": {

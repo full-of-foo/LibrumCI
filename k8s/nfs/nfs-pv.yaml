@@ -9,5 +9,5 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: 10.3.249.27 # FIXME: use the right IP
+    server: 10.3.240.178 # FIXME: use the right IP
     path: "/exports"
